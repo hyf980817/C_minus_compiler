@@ -1,8 +1,17 @@
 %{
     #include <stdio.h>
+    #include "syntax.tab.h"
+    int yycolumn = 1;
+    #define YY_USER_ACTION \
+        yylloc.first_line = yylloc.last_line = yylineno; \
+        yylloc.first_column = yycolumn; \
+        yylloc.last_column = yycolumn + yyleng - 1; \
+        yycolumn += yyleng;
 %}
 
 %option yylineno
+
+
 
 letter [_a-zA-Z]
 non_zero [1-9]
@@ -13,66 +22,69 @@ digits [0-9]+
 
 %%
 
-(" "|"\t"|"\n")+    {;}
+(" "|"\t")+     {;}
+"\n"            {yycolumn = 1;}
     /*类型*/
-int             {printf("INT_TYPE\n");}
-char            {printf("CHAR_TYPE\n");}
-float           {printf("FLOAT_TYPE\n");}
-void            {printf("VOID_TYPE\n");}
+int             {return TYPE_INT;}
+char            {return TYPE_CHAR;}
+float           {return TYPE_FLOAT;}
+void            {return VOID;}
 
     /*关键字*/
-return          {printf("RETURN\n");}
-if              {printf("IF\n");}
-else            {printf("ELSE\n");}
-while           {printf("WHILE\n");}
-for             {printf("FOR\n");}
+return          {return RETURN;}
+if              {return IF;}
+else            {return ELSE;}
+while           {return WHILE;}
+for             {return FOR;}
+break           {return BREAK;}
+continue        {return CONTINUE;}
 
     /*标识符*/
-{letter}({digit}|{letter})*     {printf("ID\n");}
+{letter}({digit}|{letter})*     {yylval.type_str = strdup(yytext); return ID;}
 
     /*整型*/
-{non_zero}{digits}|{digit}  {printf("INT_VALUE: %d\n", atoi(yytext));}
+{non_zero}{digits}|{digit}  {yylval.type_int = atoi(yytext); return INT;}
 
     /*浮点*/
-({non_zero}{digits}|{digit})"."{digits}|"."{digits}     {printf("FLOAT_VALUE\n");}
+({non_zero}{digits}|{digit})"."{digits}|"."{digits}     {yylval.type_str = strdup(yytext); return FLOAT;}
 
     /*字符*/
-\'[a-zA-Z]\'        {printf("CHAR_VALUE\n");}
+\'[a-zA-Z]\'        {yylval.type_str = strdup(yytext); return CHAR;}
 
     /*字符串*/
-\"[^\n]\"           {printf("STRING\n");}
+\"[^\n]\"           {yylval.type_str = strdup(yytext); return STRING;}
     /*符号*/
-"."             {printf("POINT\n");}
-";"             {printf("SEMI\n");}
-","             {printf("COMMA\n");}
-"'"             {printf("S_QUOTA\n");}
-\"              {printf("QUOTA\n");}
+"."             {return POINT;}
+";"             {return SEMI;}
+","             {return COMMA;}
+"'"             {return S_QUOTA;}
+\"              {return QUOTA;}
 
-"("             {printf("LP\n");}    
-")"             {printf("RP\n");}    
-"["             {printf("LB\n");}    
-"]"             {printf("RB\n");}    
-"{"             {printf("LC\n");}    
-"}"             {printf("RC\n");}    
+"("             {return LP;}    
+")"             {return RP;}    
+"["             {return LB;}    
+"]"             {return RB;}    
+"{"             {return LC;}    
+"}"             {return RC;}    
 
 
-"&"              {printf("OP_ADDR\n");}    
-"*"              {printf("OP_DEREF or OP_MUL\n");}    
-"-"              {printf("OP_SUB or OP_NEG\n");}    
-"/"              {printf("OP_DIV\n");}    
-"%"              {printf("OP_MOD\n");}    
-"+"              {printf("OP_ADD\n");}    
-">>"              {printf("OP_SHR\n");}    
-"<<"              {printf("OP_SHL\n");}    
-">"              {printf("OP_GT\n");}    
-"<"              {printf("OP_LT\n");}    
-">="              {printf("OP_GE\n");}    
-"<="              {printf("OP_LE\n");}    
-"=="              {printf("OP_EQ\n");}    
-"!="              {printf("OP_NEQ\n");}    
-"^"              {printf("OP_XOR\n");}    
-"|"              {printf("OP_OR\n");}    
-"="              {printf("OP_ASSIGN\n");}    
+"*"              {return OP_STAR;}    
+"-"              {return OP_SUB;}    
+"/"              {return OP_DIV;}    
+"%"              {return OP_MOD;}    
+"+"              {return OP_ADD;}    
+">>"              {return OP_SHR;}    
+"<<"              {return OP_SHL;}    
+">"              {return OP_GT;}    
+"<"              {return OP_LT;}    
+">="              {return OP_GE;}    
+"<="              {return OP_LE;}    
+"=="              {return OP_EQ;}    
+"!="              {return OP_NEQ;}    
+"&"              {return OP_BIT_AND;}
+"^"              {return OP_BIT_XOR;}    
+"|"              {return OP_BIT_OR;}    
+"="              {return OP_ASSIGN;}    
 
 
 
@@ -80,14 +92,3 @@ for             {printf("FOR\n");}
 
 
 %%
-int main(int argc, char **argv)
-{
-    if(argc > 1) {
-        if(!(yyin = fopen(argv[1], "r"))) {
-            perror(argv[1]);
-            return 1;
-        }
-    }
-    yylex();
-    return 0;
-}
