@@ -39,6 +39,8 @@ for             {printf("FOR\n");}
     /*字符*/
 \'[a-zA-Z]\'        {printf("CHAR_VALUE\n");}
 
+
+'\n'        {;}
     /*字符串*/
 \"[^\n]\"           {printf("STRING\n");}
     /*符号*/
