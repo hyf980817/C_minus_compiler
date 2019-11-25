@@ -54,8 +54,12 @@ DefDecList :  /*empty*/
     | DefDec DefDecList
     ;
 
+ /*Def: 变量定义语句, 如int a,b;*/
+VarDefStmt : TYPE VarDecList SEMI
+    ;
+
  /*DefDec:定义声明, 表示一个全局变量或者函数的定义/声明, 两个产生式, 前者是全局变量, 后者是函数*/
-DefDec : TYPE VarDecList SEMI
+DefDec : VarDefStmt
     | TYPE FunDec BLOCK
     ;
  /*VarDecList: 变量声明串, 由一个或者由逗号分隔开的多个VarDec(变量名)组成*/
@@ -67,10 +71,11 @@ TYPE : TYPE_INT | TYPE_FLOAT | TYPE_CHAR;
 
  /*VarDec: 对一个变量的定义,标识符或者数组, 如int a中的a, int a[3]中的a[3]*/
 VarDec : ID
+    | ID OP_ASSIGN Expr
     | VarDec LB INT RB
     ;
 
- /*FunDec:函数定义, fun(), fun(int a, int b).*/
+ /*FunDec:函数声明, fun(), fun(int a, int b).*/
 FunDec : ID LP ParaList RP
     | ID LP RP
     ;
@@ -95,19 +100,6 @@ Sentence : Def
     | Stmt
     ;
 
- /*Def: 定义语句, 如int a,b;*/
-Def : TYPE DecList SEMI
-    ;
-
- /*变量声明串*/
-DecList : Dec
-    | Dec COMMA DecList
-    ;
-
- /*变量声明, a, a=3*/
-Dec : VarDec
-    | VarDec OP_ASSIGN Expr
-    ;
 
  /*陈述语句*/
 Stmt : Expr SEMI
