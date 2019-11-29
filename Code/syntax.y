@@ -204,8 +204,9 @@ void insertBrotherToLeft(T* root, T* newnode)
   1. 压入新的符号, isReduction为false, 这时只需要提供新的节点, 将其插入为root的最右端brother
   2. 进行规约, isReduction为true. 此时, root最右侧的reduceLength个节点需要按顺序成为新插入的newnode的child.
 */
-T* updateSyntaxTree(T* root, T* newnode, int isReduction, int reduceLength)
+T* updateSyntaxTree(T* root, char * name,int isReduction, int reduceLength)
 {
+    T* newnode = initTreeNode(name);
     if(root == NULL)
     {
         if(isReduction)
