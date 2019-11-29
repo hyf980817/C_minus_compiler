@@ -14,4 +14,6 @@ typedef struct T {
 T* initTreeNode(char* name);
 void insertChild(T* root, T* newnode);
 void insertBrotherToLeft(T* root, T* newnode);
-void updateSyntaxTree(T* root, char* name, int isReduction, int reduceLength);
+
+
+
