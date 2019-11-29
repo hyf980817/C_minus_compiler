@@ -1,6 +1,8 @@
 %{
     #include <stdio.h>
+    #include "Tree.h"
     #include "syntax.tab.h"
+   
     int yycolumn = 1;
     #define YY_USER_ACTION \
         yylloc.first_line = yylloc.last_line = yylineno; \
@@ -49,7 +51,7 @@ continue        {return CONTINUE;}
 ({non_zero}{digits}|{digit})"."{digits}|"."{digits}     {yylval.type_str = strdup(yytext); return FLOAT;}
 
     /*字符*/
-\'[a-zA-Z]\'        {yylval.type_str = strdup(yytext); return CHAR;}
+\'[a-zA-Z]\'        {yylval.type_char = yytext[0]; return CHAR;}
 
     /*字符串*/
 \"[^\n]\"           {yylval.type_str = strdup(yytext); return STRING;}

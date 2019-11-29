@@ -66,21 +66,11 @@
 
     #include <stdio.h>
     #include "lex.yy.c"
-    #define YYSTYPE_IS_DECLARED
-    typedef struct T {
-        union {
-            int type_int;
-            float type_float;
-            char type_char;
-            char* type_str;
-        };
-        char* name;
-        struct T* child;
-        struct T* brother;
-    }YYSTYPE;
+    T* TreeRoot = NULL; 
+
     
 
-#line 84 "syntax.tab.c" /* yacc.c:339  */
+#line 74 "syntax.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -104,7 +94,7 @@
 # define YY_YY_SYNTAX_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -164,6 +154,11 @@ extern int yydebug;
 #endif
 
 /* Value type.  */
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef struct T YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
+#endif
 
 /* Location type.  */
 #if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
@@ -188,7 +183,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 192 "syntax.tab.c" /* yacc.c:358  */
+#line 187 "syntax.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -492,13 +487,13 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    68,    68,    72,    73,    77,    81,    82,    85,    86,
-      89,    89,    89,    92,    93,    94,    98,    99,   102,   103,
-     107,   110,   114,   115,   118,   119,   124,   125,   126,   127,
-     128,   129,   130,   131,   132,   135,   136,   137,   138,   139,
+       0,    58,    58,    62,    63,    67,    71,    72,    75,    76,
+      79,    79,    79,    82,    83,    84,    88,    89,    92,    93,
+      97,   100,   104,   105,   108,   109,   114,   115,   116,   117,
+     118,   119,   120,   121,   122,   125,   126,   127,   128,   129,
+     130,   131,   132,   133,   134,   135,   136,   137,   138,   139,
      140,   141,   142,   143,   144,   145,   146,   147,   148,   149,
-     150,   151,   152,   153,   154,   155,   156,   157,   158,   159,
-     162,   163
+     152,   153
 };
 #endif
 
@@ -1511,13 +1506,13 @@ yyreduce:
   switch (yyn)
     {
         case 55:
-#line 155 "syntax.y" /* yacc.c:1646  */
+#line 145 "syntax.y" /* yacc.c:1646  */
     {printf("INT: %d" ,(yyvsp[0].type_int));}
-#line 1517 "syntax.tab.c" /* yacc.c:1646  */
+#line 1512 "syntax.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1521 "syntax.tab.c" /* yacc.c:1646  */
+#line 1516 "syntax.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1752,12 +1747,84 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 165 "syntax.y" /* yacc.c:1906  */
+#line 155 "syntax.y" /* yacc.c:1906  */
 
-
+int
 yyerror(char* msg)
 {
     fprintf(stderr, "error: %s\n", msg);
     return 0;
 }
 
+
+//初始化一个节点, 目前我们只需要节点信息包括(非)终结符号的名字
+T* initTreeNode(char* name)
+{
+    T* result = (T*)malloc(sizeof(T));
+    result->child = NULL;
+    result->l_brother = NULL;
+    result->r_brother = NULL;
+    result->name = strdup(name);
+
+    return result;
+}
+
+//将c插入为root的child节点
+void insertChild(T* root, T* newnode)
+{
+    root->child = newnode;
+}
+
+//将c插入作为root的brother节点(如果已经有brother节点,则插入到最右边)
+void insertBrotherToRight(T* root, T* newnode)
+{
+    T* brother_end = root;
+    while(brother_end -> r_brother != NULL)
+        brother_end = brother_end -> r_brother;
+    brother_end->r_brother = newnode;
+    newnode->l_brother = brother_end;
+}
+
+//将c插入作为root的brother节点(插入到root之后, 如果root已经有brother节点, c的brother将指向原本的root的brother)
+void insertBrotherToLeft(T* root, T* newnode)
+{
+    newnode->r_brother = root->r_brother;
+    newnode->r_brother->l_brother = newnode;
+    root->r_brother = newnode;
+    newnode->l_brother = root;
+    
+}
+
+
+/*更新语法树
+  两种情况:
+  1. 压入新的符号, isReduction为false, 这时只需要提供新的节点, 将其插入为root的最右端brother
+  2. 进行规约, isReduction为true. 此时, root最右侧的reduceLength个节点需要按顺序成为新插入的newnode的child.
+*/
+void updateSyntaxTree(T* root, T* newnode, int isReduction, int reduceLength)
+{
+    T* end = root;
+
+    while(end->r_brother != NULL)
+        end = end->r_brother;
+    if(isReduction)
+    {
+
+        //向前回溯reduceLength - 1步
+        int i = 0;
+        while(i < reduceLength - 1)
+            end = end->l_brother;
+
+        //此时end指向的节点就是newnode的child
+        newnode->child = end;
+        end->l_brother->r_brother = newnode;
+        newnode->l_brother = end->l_brother;
+        end->l_brother = NULL;
+    }
+    else
+    {
+        end->r_brother = newnode;
+        newnode->l_brother = end;
+    }
+
+}

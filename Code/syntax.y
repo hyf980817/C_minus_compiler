@@ -3,22 +3,8 @@
 %{
     #include <stdio.h>
     #include "lex.yy.c"
-    #define YYSTYPE_IS_DECLARED
-    typedef struct T {
-        union {
-            int type_int;
-            float type_float;
-            char type_char;
-            char* type_str;
-        };
-        char* name;
-        struct T* child;
-        struct T* l_brother;
-        struct T* r_brother;
-    }YYSTYPE;
-
-    typedef YYSTYPE T;
     T* TreeRoot = NULL; 
+
     
 %}
 
@@ -31,7 +17,7 @@
 }
 */
 
-
+%define api.value.type {struct T}
 
 
 %token TYPE_INT TYPE_CHAR TYPE_FLOAT
@@ -204,7 +190,7 @@ void insertBrotherToRight(T* root, T* newnode)
 }
 
 //将c插入作为root的brother节点(插入到root之后, 如果root已经有brother节点, c的brother将指向原本的root的brother)
-void insertBrotherToRight(T* root, T* newnode)
+void insertBrotherToLeft(T* root, T* newnode)
 {
     newnode->r_brother = root->r_brother;
     newnode->r_brother->l_brother = newnode;
@@ -219,20 +205,30 @@ void insertBrotherToRight(T* root, T* newnode)
   1. 压入新的符号, isReduction为false, 这时只需要提供新的节点, 将其插入为root的最右端brother
   2. 进行规约, isReduction为true. 此时, root最右侧的reduceLength个节点需要按顺序成为新插入的newnode的child.
 */
-void updateSyntaxTree(T* root, T* newnode, bool isReduction, int reduceLength)
+void updateSyntaxTree(T* root, T* newnode, int isReduction, int reduceLength)
 {
     T* end = root;
+
     while(end->r_brother != NULL)
         end = end->r_brother;
+    if(isReduction)
+    {
 
-    //向前回溯reduceLength - 1步
-    int i = 0;
-    while(i < reduceLength - 1)
-        end = end->l_brother;
+        //向前回溯reduceLength - 1步
+        int i = 0;
+        while(i < reduceLength - 1)
+            end = end->l_brother;
 
-    //此时end指向的节点就是newnode的child
-    newnode->child = end;
-    end->l_brother->r_brother = newnode;
-    newnode->l_brother = end->l_brother;
-    end->l_brother = NULL;
+        //此时end指向的节点就是newnode的child
+        newnode->child = end;
+        end->l_brother->r_brother = newnode;
+        newnode->l_brother = end->l_brother;
+        end->l_brother = NULL;
+    }
+    else
+    {
+        end->r_brother = newnode;
+        newnode->l_brother = end;
+    }
+
 }
