@@ -1072,7 +1072,7 @@ YY_RULE_SETUP
 case 47:
 YY_RULE_SETUP
 #line 91 "lexical.l"
-{printf("Misunderstanding at line %d\n", yylineno);}
+{printf("Unknown at line %d:%c", yylineno, yytext[0]);}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP

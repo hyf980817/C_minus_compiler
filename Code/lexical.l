@@ -23,7 +23,7 @@ digits [0-9]+
 %%
 
 (" "|"\t")+     {;}
-"\n"            {yycolumn = 1;}
+\n            {yycolumn = 1;}
     /*类型*/
 int             {return TYPE_INT;}
 char            {return TYPE_CHAR;}
@@ -88,7 +88,7 @@ continue        {return CONTINUE;}
 
 
 
-.           {printf("Misunderstanding at line %d\n", yylineno);}
+.           {printf("Unknown at line %d:%c", yylineno, yytext[0]);}
 
 
 %%

@@ -16,131 +16,126 @@ Grammar
     2 DefDecList: %empty
     3           | DefDec DefDecList
 
-    4 DefDec: Specifier VarDecList SEMI
-    5       | Specifier FunDec BLOCK
+    4 VarDefStmt: TYPE VarDecList SEMI
 
-    6 VarDecList: VarDec
-    7           | VarDec COMMA VarDecList
+    5 DefDec: VarDefStmt
+    6       | TYPE FunDec BLOCK
 
-    8 Specifier: TYPE_INT
-    9          | TYPE_FLOAT
-   10          | TYPE_CHAR
+    7 VarDecList: VarDec
+    8           | VarDec COMMA VarDecList
 
-   11 VarDec: ID
-   12       | VarDec LB INT RB
+    9 TYPE: TYPE_INT
+   10     | TYPE_FLOAT
+   11     | TYPE_CHAR
 
-   13 FunDec: ID LP ParaList RP
-   14       | ID LP RP
+   12 VarDec: ID
+   13       | ID OP_ASSIGN Expr
+   14       | VarDec LB INT RB
 
-   15 ParaList: ParaDec COMMA ParaList
-   16         | ParaDec
+   15 FunDec: ID LP ParaList RP
+   16       | ID LP RP
 
-   17 ParaDec: Specifier VarDec
+   17 ParaList: ParaDec COMMA ParaList
+   18         | ParaDec
 
-   18 BLOCK: LC SentenceList RC
+   19 ParaDec: TYPE VarDec
 
-   19 SentenceList: Sentence SentenceList
-   20             | %empty
+   20 BLOCK: LC SentenceList RC
 
-   21 Sentence: Def
-   22         | Stmt
+   21 SentenceList: Sentence SentenceList
+   22             | %empty
 
-   23 Def: Specifier DecList SEMI
+   23 Sentence: VarDefStmt
+   24         | Stmt
 
-   24 DecList: Dec
-   25        | Dec COMMA DecList
+   25 Stmt: Expr SEMI
+   26     | BLOCK
+   27     | RETURN Expr SEMI
+   28     | IF LP Expr RP Stmt
+   29     | IF LP Expr RP Stmt ELSE Stmt
+   30     | WHILE LP Expr RP Stmt
+   31     | FOR LP Expr SEMI Expr SEMI Expr SEMI RP Stmt
+   32     | BREAK SEMI
+   33     | CONTINUE SEMI
 
-   26 Dec: VarDec
-   27    | VarDec OP_ASSIGN Expr
+   34 Expr: Expr OP_ASSIGN Expr
+   35     | Expr OP_BIT_OR Expr
+   36     | Expr OP_BIT_XOR Expr
+   37     | Expr OP_BIT_AND Expr
+   38     | Expr OP_EQ Expr
+   39     | Expr OP_NEQ Expr
+   40     | Expr OP_GT Expr
+   41     | Expr OP_LT Expr
+   42     | Expr OP_GE Expr
+   43     | Expr OP_LE Expr
+   44     | Expr OP_SHL Expr
+   45     | Expr OP_SHR Expr
+   46     | Expr OP_ADD Expr
+   47     | Expr OP_SUB Expr
+   48     | Expr OP_STAR Expr
+   49     | Expr OP_DIV Expr
+   50     | Expr OP_MOD Expr
+   51     | LP Expr RP
+   52     | ID
+   53     | FLOAT
+   54     | INT
+   55     | CHAR
+   56     | ID LP Args RP
+   57     | ID LP RP
+   58     | Expr LB Expr RB
 
-   28 Stmt: Expr SEMI
-   29     | BLOCK
-   30     | RETURN Expr SEMI
-   31     | IF LP Expr RP Stmt
-   32     | IF LP Expr RP Stmt ELSE Stmt
-   33     | WHILE LP Expr RP Stmt
-   34     | FOR LP Expr SEMI Expr SEMI Expr SEMI RP Stmt
-   35     | BREAK SEMI
-   36     | CONTINUE SEMI
-
-   37 Expr: Expr OP_ASSIGN Expr
-   38     | Expr OP_BIT_OR Expr
-   39     | Expr OP_BIT_XOR Expr
-   40     | Expr OP_BIT_AND Expr
-   41     | Expr OP_EQ Expr
-   42     | Expr OP_NEQ Expr
-   43     | Expr OP_GT Expr
-   44     | Expr OP_LT Expr
-   45     | Expr OP_GE Expr
-   46     | Expr OP_LE Expr
-   47     | Expr OP_SHL Expr
-   48     | Expr OP_SHR Expr
-   49     | Expr OP_ADD Expr
-   50     | Expr OP_SUB Expr
-   51     | Expr OP_STAR Expr
-   52     | Expr OP_DIV Expr
-   53     | Expr OP_MOD Expr
-   54     | LP Expr RP
-   55     | ID
-   56     | FLOAT
-   57     | INT
-   58     | CHAR
-   59     | ID LP Args RP
-   60     | ID LP RP
-   61     | Expr LB Expr RB
-
-   62 Args: Expr COMMA Args
-   63     | Expr
+   59 Args: Expr COMMA Args
+   60     | Expr
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-TYPE_INT (258) 8
-TYPE_CHAR (259) 10
-TYPE_FLOAT (260) 9
-INT (261) 12 57
-FLOAT (262) 56
-CHAR (263) 58
-ID (264) 11 13 14 55 59 60
+TYPE_INT (258) 9
+TYPE_CHAR (259) 11
+TYPE_FLOAT (260) 10
+INT (261) 14 54
+FLOAT (262) 53
+CHAR (263) 55
+ID (264) 12 13 15 16 52 56 57
 STRING (265)
 VOID (266)
-RETURN (267) 30
-IF (268) 31 32
-ELSE (269) 32
-WHILE (270) 33
-FOR (271) 34
-BREAK (272) 35
-CONTINUE (273) 36
+RETURN (267) 27
+IF (268) 28 29
+ELSE (269) 29
+WHILE (270) 30
+FOR (271) 31
+BREAK (272) 32
+CONTINUE (273) 33
 POINT (274)
-SEMI (275) 4 23 28 30 34 35 36
-COMMA (276) 7 15 25 62
+SEMI (275) 4 25 27 31 32 33
+COMMA (276) 8 17 59
 S_QUOTA (277)
 QUOTA (278)
-LP (279) 13 14 31 32 33 34 54 59 60
-RP (280) 13 14 31 32 33 34 54 59 60
-LB (281) 12 61
-RB (282) 12 61
-LC (283) 18
-RC (284) 18
-OP_STAR (285) 51
-OP_DIV (286) 52
-OP_MOD (287) 53
-OP_ADD (288) 49
-OP_SUB (289) 50
-OP_SHL (290) 47
-OP_SHR (291) 48
-OP_GT (292) 43
-OP_LT (293) 44
-OP_GE (294) 45
-OP_LE (295) 46
-OP_EQ (296) 41
-OP_NEQ (297) 42
-OP_BIT_AND (298) 40
-OP_BIT_XOR (299) 39
-OP_BIT_OR (300) 38
-OP_ASSIGN (301) 27 37
+LP (279) 15 16 28 29 30 31 51 56 57
+RP (280) 15 16 28 29 30 31 51 56 57
+LB (281) 14 58
+RB (282) 14 58
+LC (283) 20
+RC (284) 20
+OP_STAR (285) 48
+OP_DIV (286) 49
+OP_MOD (287) 50
+OP_ADD (288) 46
+OP_SUB (289) 47
+OP_SHL (290) 44
+OP_SHR (291) 45
+OP_GT (292) 40
+OP_LT (293) 41
+OP_GE (294) 42
+OP_LE (295) 43
+OP_EQ (296) 38
+OP_NEQ (297) 39
+OP_BIT_AND (298) 37
+OP_BIT_XOR (299) 36
+OP_BIT_OR (300) 35
+OP_ASSIGN (301) 13 34
 LOWER_THAN_ELSE (302)
 
 
@@ -152,40 +147,36 @@ Program (49)
     on left: 1, on right: 0
 DefDecList (50)
     on left: 2 3, on right: 1 3
-DefDec (51)
-    on left: 4 5, on right: 3
-VarDecList (52)
-    on left: 6 7, on right: 4 7
-Specifier (53)
-    on left: 8 9 10, on right: 4 5 17 23
-VarDec (54)
-    on left: 11 12, on right: 6 7 12 17 26 27
-FunDec (55)
-    on left: 13 14, on right: 5
-ParaList (56)
-    on left: 15 16, on right: 13 15
-ParaDec (57)
-    on left: 17, on right: 15 16
-BLOCK (58)
-    on left: 18, on right: 5 29
-SentenceList (59)
-    on left: 19 20, on right: 18 19
-Sentence (60)
-    on left: 21 22, on right: 19
-Def (61)
-    on left: 23, on right: 21
-DecList (62)
-    on left: 24 25, on right: 23 25
-Dec (63)
-    on left: 26 27, on right: 24 25
-Stmt (64)
-    on left: 28 29 30 31 32 33 34 35 36, on right: 22 31 32 33 34
-Expr (65)
-    on left: 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54
-    55 56 57 58 59 60 61, on right: 27 28 30 31 32 33 34 37 38 39 40
-    41 42 43 44 45 46 47 48 49 50 51 52 53 54 61 62 63
-Args (66)
-    on left: 62 63, on right: 59 62
+VarDefStmt (51)
+    on left: 4, on right: 5 23
+DefDec (52)
+    on left: 5 6, on right: 3
+VarDecList (53)
+    on left: 7 8, on right: 4 8
+TYPE (54)
+    on left: 9 10 11, on right: 4 6 19
+VarDec (55)
+    on left: 12 13 14, on right: 7 8 14 19
+FunDec (56)
+    on left: 15 16, on right: 6
+ParaList (57)
+    on left: 17 18, on right: 15 17
+ParaDec (58)
+    on left: 19, on right: 17 18
+BLOCK (59)
+    on left: 20, on right: 6 26
+SentenceList (60)
+    on left: 21 22, on right: 20 21
+Sentence (61)
+    on left: 23 24, on right: 21
+Stmt (62)
+    on left: 25 26 27 28 29 30 31 32 33, on right: 24 28 29 30 31
+Expr (63)
+    on left: 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+    52 53 54 55 56 57 58, on right: 13 25 27 28 29 30 31 34 35 36 37
+    38 39 40 41 42 43 44 45 46 47 48 49 50 51 58 59 60
+Args (64)
+    on left: 59 60, on right: 56 59
 
 
 State 0
@@ -200,36 +191,37 @@ State 0
 
     Program     go to state 4
     DefDecList  go to state 5
-    DefDec      go to state 6
-    Specifier   go to state 7
+    VarDefStmt  go to state 6
+    DefDec      go to state 7
+    TYPE        go to state 8
 
 
 State 1
 
-    8 Specifier: TYPE_INT .
+    9 TYPE: TYPE_INT .
 
-    $default  reduce using rule 8 (Specifier)
+    $default  reduce using rule 9 (TYPE)
 
 
 State 2
 
-   10 Specifier: TYPE_CHAR .
+   11 TYPE: TYPE_CHAR .
 
-    $default  reduce using rule 10 (Specifier)
+    $default  reduce using rule 11 (TYPE)
 
 
 State 3
 
-    9 Specifier: TYPE_FLOAT .
+   10 TYPE: TYPE_FLOAT .
 
-    $default  reduce using rule 9 (Specifier)
+    $default  reduce using rule 10 (TYPE)
 
 
 State 4
 
     0 $accept: Program . $end
 
-    $end  shift, and go to state 8
+    $end  shift, and go to state 9
 
 
 State 5
@@ -241,6 +233,13 @@ State 5
 
 State 6
 
+    5 DefDec: VarDefStmt .
+
+    $default  reduce using rule 5 (DefDec)
+
+
+State 7
+
     3 DefDecList: DefDec . DefDecList
 
     TYPE_INT    shift, and go to state 1
@@ -249,2080 +248,2031 @@ State 6
 
     $default  reduce using rule 2 (DefDecList)
 
-    DefDecList  go to state 9
-    DefDec      go to state 6
-    Specifier   go to state 7
-
-
-State 7
-
-    4 DefDec: Specifier . VarDecList SEMI
-    5       | Specifier . FunDec BLOCK
-
-    ID  shift, and go to state 10
-
-    VarDecList  go to state 11
-    VarDec      go to state 12
-    FunDec      go to state 13
+    DefDecList  go to state 10
+    VarDefStmt  go to state 6
+    DefDec      go to state 7
+    TYPE        go to state 8
 
 
 State 8
+
+    4 VarDefStmt: TYPE . VarDecList SEMI
+    6 DefDec: TYPE . FunDec BLOCK
+
+    ID  shift, and go to state 11
+
+    VarDecList  go to state 12
+    VarDec      go to state 13
+    FunDec      go to state 14
+
+
+State 9
 
     0 $accept: Program $end .
 
     $default  accept
 
 
-State 9
+State 10
 
     3 DefDecList: DefDec DefDecList .
 
     $default  reduce using rule 3 (DefDecList)
 
 
-State 10
-
-   11 VarDec: ID .
-   13 FunDec: ID . LP ParaList RP
-   14       | ID . LP RP
-
-    LP  shift, and go to state 14
-
-    $default  reduce using rule 11 (VarDec)
-
-
 State 11
 
-    4 DefDec: Specifier VarDecList . SEMI
-
-    SEMI  shift, and go to state 15
-
-
-State 12
-
-    6 VarDecList: VarDec .
-    7           | VarDec . COMMA VarDecList
-   12 VarDec: VarDec . LB INT RB
-
-    COMMA  shift, and go to state 16
-    LB     shift, and go to state 17
-
-    $default  reduce using rule 6 (VarDecList)
-
-
-State 13
-
-    5 DefDec: Specifier FunDec . BLOCK
-
-    LC  shift, and go to state 18
-
-    BLOCK  go to state 19
-
-
-State 14
-
-   13 FunDec: ID LP . ParaList RP
-   14       | ID LP . RP
-
-    TYPE_INT    shift, and go to state 1
-    TYPE_CHAR   shift, and go to state 2
-    TYPE_FLOAT  shift, and go to state 3
-    RP          shift, and go to state 20
-
-    Specifier  go to state 21
-    ParaList   go to state 22
-    ParaDec    go to state 23
-
-
-State 15
-
-    4 DefDec: Specifier VarDecList SEMI .
-
-    $default  reduce using rule 4 (DefDec)
-
-
-State 16
-
-    7 VarDecList: VarDec COMMA . VarDecList
-
-    ID  shift, and go to state 24
-
-    VarDecList  go to state 25
-    VarDec      go to state 12
-
-
-State 17
-
-   12 VarDec: VarDec LB . INT RB
-
-    INT  shift, and go to state 26
-
-
-State 18
-
-   18 BLOCK: LC . SentenceList RC
-
-    TYPE_INT    shift, and go to state 1
-    TYPE_CHAR   shift, and go to state 2
-    TYPE_FLOAT  shift, and go to state 3
-    INT         shift, and go to state 27
-    FLOAT       shift, and go to state 28
-    CHAR        shift, and go to state 29
-    ID          shift, and go to state 30
-    RETURN      shift, and go to state 31
-    IF          shift, and go to state 32
-    WHILE       shift, and go to state 33
-    FOR         shift, and go to state 34
-    BREAK       shift, and go to state 35
-    CONTINUE    shift, and go to state 36
-    LP          shift, and go to state 37
-    LC          shift, and go to state 18
-
-    $default  reduce using rule 20 (SentenceList)
-
-    Specifier     go to state 38
-    BLOCK         go to state 39
-    SentenceList  go to state 40
-    Sentence      go to state 41
-    Def           go to state 42
-    Stmt          go to state 43
-    Expr          go to state 44
-
-
-State 19
-
-    5 DefDec: Specifier FunDec BLOCK .
-
-    $default  reduce using rule 5 (DefDec)
-
-
-State 20
-
-   14 FunDec: ID LP RP .
-
-    $default  reduce using rule 14 (FunDec)
-
-
-State 21
-
-   17 ParaDec: Specifier . VarDec
-
-    ID  shift, and go to state 24
-
-    VarDec  go to state 45
-
-
-State 22
-
-   13 FunDec: ID LP ParaList . RP
-
-    RP  shift, and go to state 46
-
-
-State 23
-
-   15 ParaList: ParaDec . COMMA ParaList
-   16         | ParaDec .
-
-    COMMA  shift, and go to state 47
-
-    $default  reduce using rule 16 (ParaList)
-
-
-State 24
-
-   11 VarDec: ID .
-
-    $default  reduce using rule 11 (VarDec)
-
-
-State 25
-
-    7 VarDecList: VarDec COMMA VarDecList .
-
-    $default  reduce using rule 7 (VarDecList)
-
-
-State 26
-
-   12 VarDec: VarDec LB INT . RB
-
-    RB  shift, and go to state 48
-
-
-State 27
-
-   57 Expr: INT .
-
-    $default  reduce using rule 57 (Expr)
-
-
-State 28
-
-   56 Expr: FLOAT .
-
-    $default  reduce using rule 56 (Expr)
-
-
-State 29
-
-   58 Expr: CHAR .
-
-    $default  reduce using rule 58 (Expr)
-
-
-State 30
-
-   55 Expr: ID .
-   59     | ID . LP Args RP
-   60     | ID . LP RP
-
-    LP  shift, and go to state 49
-
-    $default  reduce using rule 55 (Expr)
-
-
-State 31
-
-   30 Stmt: RETURN . Expr SEMI
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 50
-
-
-State 32
-
-   31 Stmt: IF . LP Expr RP Stmt
-   32     | IF . LP Expr RP Stmt ELSE Stmt
-
-    LP  shift, and go to state 51
-
-
-State 33
-
-   33 Stmt: WHILE . LP Expr RP Stmt
-
-    LP  shift, and go to state 52
-
-
-State 34
-
-   34 Stmt: FOR . LP Expr SEMI Expr SEMI Expr SEMI RP Stmt
-
-    LP  shift, and go to state 53
-
-
-State 35
-
-   35 Stmt: BREAK . SEMI
-
-    SEMI  shift, and go to state 54
-
-
-State 36
-
-   36 Stmt: CONTINUE . SEMI
-
-    SEMI  shift, and go to state 55
-
-
-State 37
-
-   54 Expr: LP . Expr RP
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 56
-
-
-State 38
-
-   23 Def: Specifier . DecList SEMI
-
-    ID  shift, and go to state 24
-
-    VarDec   go to state 57
-    DecList  go to state 58
-    Dec      go to state 59
-
-
-State 39
-
-   29 Stmt: BLOCK .
-
-    $default  reduce using rule 29 (Stmt)
-
-
-State 40
-
-   18 BLOCK: LC SentenceList . RC
-
-    RC  shift, and go to state 60
-
-
-State 41
-
-   19 SentenceList: Sentence . SentenceList
-
-    TYPE_INT    shift, and go to state 1
-    TYPE_CHAR   shift, and go to state 2
-    TYPE_FLOAT  shift, and go to state 3
-    INT         shift, and go to state 27
-    FLOAT       shift, and go to state 28
-    CHAR        shift, and go to state 29
-    ID          shift, and go to state 30
-    RETURN      shift, and go to state 31
-    IF          shift, and go to state 32
-    WHILE       shift, and go to state 33
-    FOR         shift, and go to state 34
-    BREAK       shift, and go to state 35
-    CONTINUE    shift, and go to state 36
-    LP          shift, and go to state 37
-    LC          shift, and go to state 18
-
-    $default  reduce using rule 20 (SentenceList)
-
-    Specifier     go to state 38
-    BLOCK         go to state 39
-    SentenceList  go to state 61
-    Sentence      go to state 41
-    Def           go to state 42
-    Stmt          go to state 43
-    Expr          go to state 44
-
-
-State 42
-
-   21 Sentence: Def .
-
-    $default  reduce using rule 21 (Sentence)
-
-
-State 43
-
-   22 Sentence: Stmt .
-
-    $default  reduce using rule 22 (Sentence)
-
-
-State 44
-
-   28 Stmt: Expr . SEMI
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    SEMI        shift, and go to state 62
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
-
-
-State 45
-
-   12 VarDec: VarDec . LB INT RB
-   17 ParaDec: Specifier VarDec .
-
-    LB  shift, and go to state 17
-
-    $default  reduce using rule 17 (ParaDec)
-
-
-State 46
-
-   13 FunDec: ID LP ParaList RP .
-
-    $default  reduce using rule 13 (FunDec)
-
-
-State 47
-
-   15 ParaList: ParaDec COMMA . ParaList
-
-    TYPE_INT    shift, and go to state 1
-    TYPE_CHAR   shift, and go to state 2
-    TYPE_FLOAT  shift, and go to state 3
-
-    Specifier  go to state 21
-    ParaList   go to state 81
-    ParaDec    go to state 23
-
-
-State 48
-
-   12 VarDec: VarDec LB INT RB .
+   12 VarDec: ID .
+   13       | ID . OP_ASSIGN Expr
+   15 FunDec: ID . LP ParaList RP
+   16       | ID . LP RP
+
+    LP         shift, and go to state 15
+    OP_ASSIGN  shift, and go to state 16
 
     $default  reduce using rule 12 (VarDec)
 
 
+State 12
+
+    4 VarDefStmt: TYPE VarDecList . SEMI
+
+    SEMI  shift, and go to state 17
+
+
+State 13
+
+    7 VarDecList: VarDec .
+    8           | VarDec . COMMA VarDecList
+   14 VarDec: VarDec . LB INT RB
+
+    COMMA  shift, and go to state 18
+    LB     shift, and go to state 19
+
+    $default  reduce using rule 7 (VarDecList)
+
+
+State 14
+
+    6 DefDec: TYPE FunDec . BLOCK
+
+    LC  shift, and go to state 20
+
+    BLOCK  go to state 21
+
+
+State 15
+
+   15 FunDec: ID LP . ParaList RP
+   16       | ID LP . RP
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_CHAR   shift, and go to state 2
+    TYPE_FLOAT  shift, and go to state 3
+    RP          shift, and go to state 22
+
+    TYPE      go to state 23
+    ParaList  go to state 24
+    ParaDec   go to state 25
+
+
+State 16
+
+   13 VarDec: ID OP_ASSIGN . Expr
+
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
+
+    Expr  go to state 31
+
+
+State 17
+
+    4 VarDefStmt: TYPE VarDecList SEMI .
+
+    $default  reduce using rule 4 (VarDefStmt)
+
+
+State 18
+
+    8 VarDecList: VarDec COMMA . VarDecList
+
+    ID  shift, and go to state 32
+
+    VarDecList  go to state 33
+    VarDec      go to state 13
+
+
+State 19
+
+   14 VarDec: VarDec LB . INT RB
+
+    INT  shift, and go to state 34
+
+
+State 20
+
+   20 BLOCK: LC . SentenceList RC
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_CHAR   shift, and go to state 2
+    TYPE_FLOAT  shift, and go to state 3
+    INT         shift, and go to state 26
+    FLOAT       shift, and go to state 27
+    CHAR        shift, and go to state 28
+    ID          shift, and go to state 29
+    RETURN      shift, and go to state 35
+    IF          shift, and go to state 36
+    WHILE       shift, and go to state 37
+    FOR         shift, and go to state 38
+    BREAK       shift, and go to state 39
+    CONTINUE    shift, and go to state 40
+    LP          shift, and go to state 30
+    LC          shift, and go to state 20
+
+    $default  reduce using rule 22 (SentenceList)
+
+    VarDefStmt    go to state 41
+    TYPE          go to state 42
+    BLOCK         go to state 43
+    SentenceList  go to state 44
+    Sentence      go to state 45
+    Stmt          go to state 46
+    Expr          go to state 47
+
+
+State 21
+
+    6 DefDec: TYPE FunDec BLOCK .
+
+    $default  reduce using rule 6 (DefDec)
+
+
+State 22
+
+   16 FunDec: ID LP RP .
+
+    $default  reduce using rule 16 (FunDec)
+
+
+State 23
+
+   19 ParaDec: TYPE . VarDec
+
+    ID  shift, and go to state 32
+
+    VarDec  go to state 48
+
+
+State 24
+
+   15 FunDec: ID LP ParaList . RP
+
+    RP  shift, and go to state 49
+
+
+State 25
+
+   17 ParaList: ParaDec . COMMA ParaList
+   18         | ParaDec .
+
+    COMMA  shift, and go to state 50
+
+    $default  reduce using rule 18 (ParaList)
+
+
+State 26
+
+   54 Expr: INT .
+
+    $default  reduce using rule 54 (Expr)
+
+
+State 27
+
+   53 Expr: FLOAT .
+
+    $default  reduce using rule 53 (Expr)
+
+
+State 28
+
+   55 Expr: CHAR .
+
+    $default  reduce using rule 55 (Expr)
+
+
+State 29
+
+   52 Expr: ID .
+   56     | ID . LP Args RP
+   57     | ID . LP RP
+
+    LP  shift, and go to state 51
+
+    $default  reduce using rule 52 (Expr)
+
+
+State 30
+
+   51 Expr: LP . Expr RP
+
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
+
+    Expr  go to state 52
+
+
+State 31
+
+   13 VarDec: ID OP_ASSIGN Expr .
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+    $default  reduce using rule 13 (VarDec)
+
+
+State 32
+
+   12 VarDec: ID .
+   13       | ID . OP_ASSIGN Expr
+
+    OP_ASSIGN  shift, and go to state 16
+
+    $default  reduce using rule 12 (VarDec)
+
+
+State 33
+
+    8 VarDecList: VarDec COMMA VarDecList .
+
+    $default  reduce using rule 8 (VarDecList)
+
+
+State 34
+
+   14 VarDec: VarDec LB INT . RB
+
+    RB  shift, and go to state 71
+
+
+State 35
+
+   27 Stmt: RETURN . Expr SEMI
+
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
+
+    Expr  go to state 72
+
+
+State 36
+
+   28 Stmt: IF . LP Expr RP Stmt
+   29     | IF . LP Expr RP Stmt ELSE Stmt
+
+    LP  shift, and go to state 73
+
+
+State 37
+
+   30 Stmt: WHILE . LP Expr RP Stmt
+
+    LP  shift, and go to state 74
+
+
+State 38
+
+   31 Stmt: FOR . LP Expr SEMI Expr SEMI Expr SEMI RP Stmt
+
+    LP  shift, and go to state 75
+
+
+State 39
+
+   32 Stmt: BREAK . SEMI
+
+    SEMI  shift, and go to state 76
+
+
+State 40
+
+   33 Stmt: CONTINUE . SEMI
+
+    SEMI  shift, and go to state 77
+
+
+State 41
+
+   23 Sentence: VarDefStmt .
+
+    $default  reduce using rule 23 (Sentence)
+
+
+State 42
+
+    4 VarDefStmt: TYPE . VarDecList SEMI
+
+    ID  shift, and go to state 32
+
+    VarDecList  go to state 12
+    VarDec      go to state 13
+
+
+State 43
+
+   26 Stmt: BLOCK .
+
+    $default  reduce using rule 26 (Stmt)
+
+
+State 44
+
+   20 BLOCK: LC SentenceList . RC
+
+    RC  shift, and go to state 78
+
+
+State 45
+
+   21 SentenceList: Sentence . SentenceList
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_CHAR   shift, and go to state 2
+    TYPE_FLOAT  shift, and go to state 3
+    INT         shift, and go to state 26
+    FLOAT       shift, and go to state 27
+    CHAR        shift, and go to state 28
+    ID          shift, and go to state 29
+    RETURN      shift, and go to state 35
+    IF          shift, and go to state 36
+    WHILE       shift, and go to state 37
+    FOR         shift, and go to state 38
+    BREAK       shift, and go to state 39
+    CONTINUE    shift, and go to state 40
+    LP          shift, and go to state 30
+    LC          shift, and go to state 20
+
+    $default  reduce using rule 22 (SentenceList)
+
+    VarDefStmt    go to state 41
+    TYPE          go to state 42
+    BLOCK         go to state 43
+    SentenceList  go to state 79
+    Sentence      go to state 45
+    Stmt          go to state 46
+    Expr          go to state 47
+
+
+State 46
+
+   24 Sentence: Stmt .
+
+    $default  reduce using rule 24 (Sentence)
+
+
+State 47
+
+   25 Stmt: Expr . SEMI
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    SEMI        shift, and go to state 80
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+
+State 48
+
+   14 VarDec: VarDec . LB INT RB
+   19 ParaDec: TYPE VarDec .
+
+    LB  shift, and go to state 19
+
+    $default  reduce using rule 19 (ParaDec)
+
+
 State 49
 
-   59 Expr: ID LP . Args RP
-   60     | ID LP . RP
+   15 FunDec: ID LP ParaList RP .
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    $default  reduce using rule 15 (FunDec)
+
+
+State 50
+
+   17 ParaList: ParaDec COMMA . ParaList
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_CHAR   shift, and go to state 2
+    TYPE_FLOAT  shift, and go to state 3
+
+    TYPE      go to state 23
+    ParaList  go to state 81
+    ParaDec   go to state 25
+
+
+State 51
+
+   56 Expr: ID LP . Args RP
+   57     | ID LP . RP
+
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
     RP     shift, and go to state 82
 
     Expr  go to state 83
     Args  go to state 84
 
 
-State 50
-
-   30 Stmt: RETURN Expr . SEMI
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    SEMI        shift, and go to state 85
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
-
-
-State 51
-
-   31 Stmt: IF LP . Expr RP Stmt
-   32     | IF LP . Expr RP Stmt ELSE Stmt
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 86
-
-
 State 52
 
-   33 Stmt: WHILE LP . Expr RP Stmt
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   51     | LP Expr . RP
+   58     | Expr . LB Expr RB
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 87
+    RP          shift, and go to state 85
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
 
 
 State 53
 
-   34 Stmt: FOR LP . Expr SEMI Expr SEMI Expr SEMI RP Stmt
+   58 Expr: Expr LB . Expr RB
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
-    Expr  go to state 88
+    Expr  go to state 86
 
 
 State 54
 
-   35 Stmt: BREAK SEMI .
+   48 Expr: Expr OP_STAR . Expr
 
-    $default  reduce using rule 35 (Stmt)
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
+
+    Expr  go to state 87
 
 
 State 55
 
-   36 Stmt: CONTINUE SEMI .
+   49 Expr: Expr OP_DIV . Expr
 
-    $default  reduce using rule 36 (Stmt)
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
+
+    Expr  go to state 88
 
 
 State 56
 
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   54     | LP Expr . RP
-   61     | Expr . LB Expr RB
+   50 Expr: Expr OP_MOD . Expr
 
-    RP          shift, and go to state 89
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
+
+    Expr  go to state 89
 
 
 State 57
 
-   12 VarDec: VarDec . LB INT RB
-   26 Dec: VarDec .
-   27    | VarDec . OP_ASSIGN Expr
+   46 Expr: Expr OP_ADD . Expr
 
-    LB         shift, and go to state 17
-    OP_ASSIGN  shift, and go to state 90
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
-    $default  reduce using rule 26 (Dec)
+    Expr  go to state 90
 
 
 State 58
 
-   23 Def: Specifier DecList . SEMI
+   47 Expr: Expr OP_SUB . Expr
 
-    SEMI  shift, and go to state 91
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
+
+    Expr  go to state 91
 
 
 State 59
 
-   24 DecList: Dec .
-   25        | Dec . COMMA DecList
+   44 Expr: Expr OP_SHL . Expr
 
-    COMMA  shift, and go to state 92
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
-    $default  reduce using rule 24 (DecList)
+    Expr  go to state 92
 
 
 State 60
 
-   18 BLOCK: LC SentenceList RC .
+   45 Expr: Expr OP_SHR . Expr
 
-    $default  reduce using rule 18 (BLOCK)
-
-
-State 61
-
-   19 SentenceList: Sentence SentenceList .
-
-    $default  reduce using rule 19 (SentenceList)
-
-
-State 62
-
-   28 Stmt: Expr SEMI .
-
-    $default  reduce using rule 28 (Stmt)
-
-
-State 63
-
-   61 Expr: Expr LB . Expr RB
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 93
 
 
-State 64
+State 61
 
-   51 Expr: Expr OP_STAR . Expr
+   40 Expr: Expr OP_GT . Expr
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 94
 
 
-State 65
+State 62
 
-   52 Expr: Expr OP_DIV . Expr
+   41 Expr: Expr OP_LT . Expr
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 95
 
 
-State 66
+State 63
 
-   53 Expr: Expr OP_MOD . Expr
+   42 Expr: Expr OP_GE . Expr
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 96
 
 
-State 67
+State 64
 
-   49 Expr: Expr OP_ADD . Expr
+   43 Expr: Expr OP_LE . Expr
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 97
 
 
-State 68
+State 65
 
-   50 Expr: Expr OP_SUB . Expr
+   38 Expr: Expr OP_EQ . Expr
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 98
 
 
-State 69
+State 66
 
-   47 Expr: Expr OP_SHL . Expr
+   39 Expr: Expr OP_NEQ . Expr
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 99
 
 
-State 70
+State 67
 
-   48 Expr: Expr OP_SHR . Expr
+   37 Expr: Expr OP_BIT_AND . Expr
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 100
 
 
-State 71
+State 68
 
-   43 Expr: Expr OP_GT . Expr
+   36 Expr: Expr OP_BIT_XOR . Expr
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 101
 
 
-State 72
+State 69
 
-   44 Expr: Expr OP_LT . Expr
+   35 Expr: Expr OP_BIT_OR . Expr
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 102
 
 
-State 73
+State 70
 
-   45 Expr: Expr OP_GE . Expr
+   34 Expr: Expr OP_ASSIGN . Expr
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 103
 
 
-State 74
+State 71
 
-   46 Expr: Expr OP_LE . Expr
+   14 VarDec: VarDec LB INT RB .
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 104
+    $default  reduce using rule 14 (VarDec)
 
 
-State 75
+State 72
 
-   41 Expr: Expr OP_EQ . Expr
+   27 Stmt: RETURN Expr . SEMI
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    SEMI        shift, and go to state 104
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+
+State 73
+
+   28 Stmt: IF LP . Expr RP Stmt
+   29     | IF LP . Expr RP Stmt ELSE Stmt
+
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 105
 
 
-State 76
+State 74
 
-   42 Expr: Expr OP_NEQ . Expr
+   30 Stmt: WHILE LP . Expr RP Stmt
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 106
 
 
-State 77
+State 75
 
-   40 Expr: Expr OP_BIT_AND . Expr
+   31 Stmt: FOR LP . Expr SEMI Expr SEMI Expr SEMI RP Stmt
 
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
 
     Expr  go to state 107
 
 
-State 78
+State 76
 
-   39 Expr: Expr OP_BIT_XOR . Expr
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 108
-
-
-State 79
-
-   38 Expr: Expr OP_BIT_OR . Expr
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 109
-
-
-State 80
-
-   37 Expr: Expr OP_ASSIGN . Expr
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 110
-
-
-State 81
-
-   15 ParaList: ParaDec COMMA ParaList .
-
-    $default  reduce using rule 15 (ParaList)
-
-
-State 82
-
-   60 Expr: ID LP RP .
-
-    $default  reduce using rule 60 (Expr)
-
-
-State 83
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-   62 Args: Expr . COMMA Args
-   63     | Expr .
-
-    COMMA       shift, and go to state 111
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
-
-    $default  reduce using rule 63 (Args)
-
-
-State 84
-
-   59 Expr: ID LP Args . RP
-
-    RP  shift, and go to state 112
-
-
-State 85
-
-   30 Stmt: RETURN Expr SEMI .
-
-    $default  reduce using rule 30 (Stmt)
-
-
-State 86
-
-   31 Stmt: IF LP Expr . RP Stmt
-   32     | IF LP Expr . RP Stmt ELSE Stmt
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    RP          shift, and go to state 113
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
-
-
-State 87
-
-   33 Stmt: WHILE LP Expr . RP Stmt
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    RP          shift, and go to state 114
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
-
-
-State 88
-
-   34 Stmt: FOR LP Expr . SEMI Expr SEMI Expr SEMI RP Stmt
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    SEMI        shift, and go to state 115
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
-
-
-State 89
-
-   54 Expr: LP Expr RP .
-
-    $default  reduce using rule 54 (Expr)
-
-
-State 90
-
-   27 Dec: VarDec OP_ASSIGN . Expr
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 116
-
-
-State 91
-
-   23 Def: Specifier DecList SEMI .
-
-    $default  reduce using rule 23 (Def)
-
-
-State 92
-
-   25 DecList: Dec COMMA . DecList
-
-    ID  shift, and go to state 24
-
-    VarDec   go to state 57
-    DecList  go to state 117
-    Dec      go to state 59
-
-
-State 93
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-   61     | Expr LB Expr . RB
-
-    LB          shift, and go to state 63
-    RB          shift, and go to state 118
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
-
-
-State 94
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   51     | Expr OP_STAR Expr .
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB  shift, and go to state 63
-
-    $default  reduce using rule 51 (Expr)
-
-
-State 95
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   52     | Expr OP_DIV Expr .
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB  shift, and go to state 63
-
-    $default  reduce using rule 52 (Expr)
-
-
-State 96
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   53     | Expr OP_MOD Expr .
-   61     | Expr . LB Expr RB
-
-    LB  shift, and go to state 63
-
-    $default  reduce using rule 53 (Expr)
-
-
-State 97
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   49     | Expr OP_ADD Expr .
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-
-    $default  reduce using rule 49 (Expr)
-
-
-State 98
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   50     | Expr OP_SUB Expr .
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-
-    $default  reduce using rule 50 (Expr)
-
-
-State 99
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   47     | Expr OP_SHL Expr .
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-    OP_ADD   shift, and go to state 67
-    OP_SUB   shift, and go to state 68
-
-    $default  reduce using rule 47 (Expr)
-
-
-State 100
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   48     | Expr OP_SHR Expr .
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-    OP_ADD   shift, and go to state 67
-    OP_SUB   shift, and go to state 68
-
-    $default  reduce using rule 48 (Expr)
-
-
-State 101
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   43     | Expr OP_GT Expr .
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-    OP_ADD   shift, and go to state 67
-    OP_SUB   shift, and go to state 68
-    OP_SHL   shift, and go to state 69
-    OP_SHR   shift, and go to state 70
-
-    $default  reduce using rule 43 (Expr)
-
-
-State 102
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   44     | Expr OP_LT Expr .
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-    OP_ADD   shift, and go to state 67
-    OP_SUB   shift, and go to state 68
-    OP_SHL   shift, and go to state 69
-    OP_SHR   shift, and go to state 70
-
-    $default  reduce using rule 44 (Expr)
-
-
-State 103
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   45     | Expr OP_GE Expr .
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-    OP_ADD   shift, and go to state 67
-    OP_SUB   shift, and go to state 68
-    OP_SHL   shift, and go to state 69
-    OP_SHR   shift, and go to state 70
-
-    $default  reduce using rule 45 (Expr)
-
-
-State 104
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   46     | Expr OP_LE Expr .
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-    OP_ADD   shift, and go to state 67
-    OP_SUB   shift, and go to state 68
-    OP_SHL   shift, and go to state 69
-    OP_SHR   shift, and go to state 70
-
-    $default  reduce using rule 46 (Expr)
-
-
-State 105
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   41     | Expr OP_EQ Expr .
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-    OP_ADD   shift, and go to state 67
-    OP_SUB   shift, and go to state 68
-    OP_SHL   shift, and go to state 69
-    OP_SHR   shift, and go to state 70
-    OP_GT    shift, and go to state 71
-    OP_LT    shift, and go to state 72
-    OP_GE    shift, and go to state 73
-    OP_LE    shift, and go to state 74
-
-    $default  reduce using rule 41 (Expr)
-
-
-State 106
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   42     | Expr OP_NEQ Expr .
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-    OP_ADD   shift, and go to state 67
-    OP_SUB   shift, and go to state 68
-    OP_SHL   shift, and go to state 69
-    OP_SHR   shift, and go to state 70
-    OP_GT    shift, and go to state 71
-    OP_LT    shift, and go to state 72
-    OP_GE    shift, and go to state 73
-    OP_LE    shift, and go to state 74
-
-    $default  reduce using rule 42 (Expr)
-
-
-State 107
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   40     | Expr OP_BIT_AND Expr .
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB       shift, and go to state 63
-    OP_STAR  shift, and go to state 64
-    OP_DIV   shift, and go to state 65
-    OP_MOD   shift, and go to state 66
-    OP_ADD   shift, and go to state 67
-    OP_SUB   shift, and go to state 68
-    OP_SHL   shift, and go to state 69
-    OP_SHR   shift, and go to state 70
-    OP_GT    shift, and go to state 71
-    OP_LT    shift, and go to state 72
-    OP_GE    shift, and go to state 73
-    OP_LE    shift, and go to state 74
-    OP_EQ    shift, and go to state 75
-    OP_NEQ   shift, and go to state 76
-
-    $default  reduce using rule 40 (Expr)
-
-
-State 108
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   39     | Expr OP_BIT_XOR Expr .
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-
-    $default  reduce using rule 39 (Expr)
-
-
-State 109
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   38     | Expr OP_BIT_OR Expr .
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-
-    $default  reduce using rule 38 (Expr)
-
-
-State 110
-
-   37 Expr: Expr . OP_ASSIGN Expr
-   37     | Expr OP_ASSIGN Expr .
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
-
-    $default  reduce using rule 37 (Expr)
-
-
-State 111
-
-   62 Args: Expr COMMA . Args
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 83
-    Args  go to state 119
-
-
-State 112
-
-   59 Expr: ID LP Args RP .
-
-    $default  reduce using rule 59 (Expr)
-
-
-State 113
-
-   31 Stmt: IF LP Expr RP . Stmt
-   32     | IF LP Expr RP . Stmt ELSE Stmt
-
-    INT       shift, and go to state 27
-    FLOAT     shift, and go to state 28
-    CHAR      shift, and go to state 29
-    ID        shift, and go to state 30
-    RETURN    shift, and go to state 31
-    IF        shift, and go to state 32
-    WHILE     shift, and go to state 33
-    FOR       shift, and go to state 34
-    BREAK     shift, and go to state 35
-    CONTINUE  shift, and go to state 36
-    LP        shift, and go to state 37
-    LC        shift, and go to state 18
-
-    BLOCK  go to state 39
-    Stmt   go to state 120
-    Expr   go to state 44
-
-
-State 114
-
-   33 Stmt: WHILE LP Expr RP . Stmt
-
-    INT       shift, and go to state 27
-    FLOAT     shift, and go to state 28
-    CHAR      shift, and go to state 29
-    ID        shift, and go to state 30
-    RETURN    shift, and go to state 31
-    IF        shift, and go to state 32
-    WHILE     shift, and go to state 33
-    FOR       shift, and go to state 34
-    BREAK     shift, and go to state 35
-    CONTINUE  shift, and go to state 36
-    LP        shift, and go to state 37
-    LC        shift, and go to state 18
-
-    BLOCK  go to state 39
-    Stmt   go to state 121
-    Expr   go to state 44
-
-
-State 115
-
-   34 Stmt: FOR LP Expr SEMI . Expr SEMI Expr SEMI RP Stmt
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 122
-
-
-State 116
-
-   27 Dec: VarDec OP_ASSIGN Expr .
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
-
-    $default  reduce using rule 27 (Dec)
-
-
-State 117
-
-   25 DecList: Dec COMMA DecList .
-
-    $default  reduce using rule 25 (DecList)
-
-
-State 118
-
-   61 Expr: Expr LB Expr RB .
-
-    $default  reduce using rule 61 (Expr)
-
-
-State 119
-
-   62 Args: Expr COMMA Args .
-
-    $default  reduce using rule 62 (Args)
-
-
-State 120
-
-   31 Stmt: IF LP Expr RP Stmt .
-   32     | IF LP Expr RP Stmt . ELSE Stmt
-
-    ELSE  shift, and go to state 123
-
-    $default  reduce using rule 31 (Stmt)
-
-
-State 121
-
-   33 Stmt: WHILE LP Expr RP Stmt .
-
-    $default  reduce using rule 33 (Stmt)
-
-
-State 122
-
-   34 Stmt: FOR LP Expr SEMI Expr . SEMI Expr SEMI RP Stmt
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
-
-    SEMI        shift, and go to state 124
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
-
-
-State 123
-
-   32 Stmt: IF LP Expr RP Stmt ELSE . Stmt
-
-    INT       shift, and go to state 27
-    FLOAT     shift, and go to state 28
-    CHAR      shift, and go to state 29
-    ID        shift, and go to state 30
-    RETURN    shift, and go to state 31
-    IF        shift, and go to state 32
-    WHILE     shift, and go to state 33
-    FOR       shift, and go to state 34
-    BREAK     shift, and go to state 35
-    CONTINUE  shift, and go to state 36
-    LP        shift, and go to state 37
-    LC        shift, and go to state 18
-
-    BLOCK  go to state 39
-    Stmt   go to state 125
-    Expr   go to state 44
-
-
-State 124
-
-   34 Stmt: FOR LP Expr SEMI Expr SEMI . Expr SEMI RP Stmt
-
-    INT    shift, and go to state 27
-    FLOAT  shift, and go to state 28
-    CHAR   shift, and go to state 29
-    ID     shift, and go to state 30
-    LP     shift, and go to state 37
-
-    Expr  go to state 126
-
-
-State 125
-
-   32 Stmt: IF LP Expr RP Stmt ELSE Stmt .
+   32 Stmt: BREAK SEMI .
 
     $default  reduce using rule 32 (Stmt)
 
 
-State 126
+State 77
 
-   34 Stmt: FOR LP Expr SEMI Expr SEMI Expr . SEMI RP Stmt
-   37 Expr: Expr . OP_ASSIGN Expr
-   38     | Expr . OP_BIT_OR Expr
-   39     | Expr . OP_BIT_XOR Expr
-   40     | Expr . OP_BIT_AND Expr
-   41     | Expr . OP_EQ Expr
-   42     | Expr . OP_NEQ Expr
-   43     | Expr . OP_GT Expr
-   44     | Expr . OP_LT Expr
-   45     | Expr . OP_GE Expr
-   46     | Expr . OP_LE Expr
-   47     | Expr . OP_SHL Expr
-   48     | Expr . OP_SHR Expr
-   49     | Expr . OP_ADD Expr
-   50     | Expr . OP_SUB Expr
-   51     | Expr . OP_STAR Expr
-   52     | Expr . OP_DIV Expr
-   53     | Expr . OP_MOD Expr
-   61     | Expr . LB Expr RB
+   33 Stmt: CONTINUE SEMI .
 
-    SEMI        shift, and go to state 127
-    LB          shift, and go to state 63
-    OP_STAR     shift, and go to state 64
-    OP_DIV      shift, and go to state 65
-    OP_MOD      shift, and go to state 66
-    OP_ADD      shift, and go to state 67
-    OP_SUB      shift, and go to state 68
-    OP_SHL      shift, and go to state 69
-    OP_SHR      shift, and go to state 70
-    OP_GT       shift, and go to state 71
-    OP_LT       shift, and go to state 72
-    OP_GE       shift, and go to state 73
-    OP_LE       shift, and go to state 74
-    OP_EQ       shift, and go to state 75
-    OP_NEQ      shift, and go to state 76
-    OP_BIT_AND  shift, and go to state 77
-    OP_BIT_XOR  shift, and go to state 78
-    OP_BIT_OR   shift, and go to state 79
-    OP_ASSIGN   shift, and go to state 80
+    $default  reduce using rule 33 (Stmt)
 
 
-State 127
+State 78
 
-   34 Stmt: FOR LP Expr SEMI Expr SEMI Expr SEMI . RP Stmt
+   20 BLOCK: LC SentenceList RC .
 
-    RP  shift, and go to state 128
-
-
-State 128
-
-   34 Stmt: FOR LP Expr SEMI Expr SEMI Expr SEMI RP . Stmt
-
-    INT       shift, and go to state 27
-    FLOAT     shift, and go to state 28
-    CHAR      shift, and go to state 29
-    ID        shift, and go to state 30
-    RETURN    shift, and go to state 31
-    IF        shift, and go to state 32
-    WHILE     shift, and go to state 33
-    FOR       shift, and go to state 34
-    BREAK     shift, and go to state 35
-    CONTINUE  shift, and go to state 36
-    LP        shift, and go to state 37
-    LC        shift, and go to state 18
-
-    BLOCK  go to state 39
-    Stmt   go to state 129
-    Expr   go to state 44
+    $default  reduce using rule 20 (BLOCK)
 
 
-State 129
+State 79
 
-   34 Stmt: FOR LP Expr SEMI Expr SEMI Expr SEMI RP Stmt .
+   21 SentenceList: Sentence SentenceList .
 
-    $default  reduce using rule 34 (Stmt)
+    $default  reduce using rule 21 (SentenceList)
+
+
+State 80
+
+   25 Stmt: Expr SEMI .
+
+    $default  reduce using rule 25 (Stmt)
+
+
+State 81
+
+   17 ParaList: ParaDec COMMA ParaList .
+
+    $default  reduce using rule 17 (ParaList)
+
+
+State 82
+
+   57 Expr: ID LP RP .
+
+    $default  reduce using rule 57 (Expr)
+
+
+State 83
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+   59 Args: Expr . COMMA Args
+   60     | Expr .
+
+    COMMA       shift, and go to state 108
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+    $default  reduce using rule 60 (Args)
+
+
+State 84
+
+   56 Expr: ID LP Args . RP
+
+    RP  shift, and go to state 109
+
+
+State 85
+
+   51 Expr: LP Expr RP .
+
+    $default  reduce using rule 51 (Expr)
+
+
+State 86
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+   58     | Expr LB Expr . RB
+
+    LB          shift, and go to state 53
+    RB          shift, and go to state 110
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+
+State 87
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   48     | Expr OP_STAR Expr .
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB  shift, and go to state 53
+
+    $default  reduce using rule 48 (Expr)
+
+
+State 88
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   49     | Expr OP_DIV Expr .
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB  shift, and go to state 53
+
+    $default  reduce using rule 49 (Expr)
+
+
+State 89
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   50     | Expr OP_MOD Expr .
+   58     | Expr . LB Expr RB
+
+    LB  shift, and go to state 53
+
+    $default  reduce using rule 50 (Expr)
+
+
+State 90
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   46     | Expr OP_ADD Expr .
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+
+    $default  reduce using rule 46 (Expr)
+
+
+State 91
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   47     | Expr OP_SUB Expr .
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+
+    $default  reduce using rule 47 (Expr)
+
+
+State 92
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   44     | Expr OP_SHL Expr .
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+    OP_ADD   shift, and go to state 57
+    OP_SUB   shift, and go to state 58
+
+    $default  reduce using rule 44 (Expr)
+
+
+State 93
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   45     | Expr OP_SHR Expr .
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+    OP_ADD   shift, and go to state 57
+    OP_SUB   shift, and go to state 58
+
+    $default  reduce using rule 45 (Expr)
+
+
+State 94
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   40     | Expr OP_GT Expr .
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+    OP_ADD   shift, and go to state 57
+    OP_SUB   shift, and go to state 58
+    OP_SHL   shift, and go to state 59
+    OP_SHR   shift, and go to state 60
+
+    $default  reduce using rule 40 (Expr)
+
+
+State 95
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   41     | Expr OP_LT Expr .
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+    OP_ADD   shift, and go to state 57
+    OP_SUB   shift, and go to state 58
+    OP_SHL   shift, and go to state 59
+    OP_SHR   shift, and go to state 60
+
+    $default  reduce using rule 41 (Expr)
+
+
+State 96
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   42     | Expr OP_GE Expr .
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+    OP_ADD   shift, and go to state 57
+    OP_SUB   shift, and go to state 58
+    OP_SHL   shift, and go to state 59
+    OP_SHR   shift, and go to state 60
+
+    $default  reduce using rule 42 (Expr)
+
+
+State 97
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   43     | Expr OP_LE Expr .
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+    OP_ADD   shift, and go to state 57
+    OP_SUB   shift, and go to state 58
+    OP_SHL   shift, and go to state 59
+    OP_SHR   shift, and go to state 60
+
+    $default  reduce using rule 43 (Expr)
+
+
+State 98
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   38     | Expr OP_EQ Expr .
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+    OP_ADD   shift, and go to state 57
+    OP_SUB   shift, and go to state 58
+    OP_SHL   shift, and go to state 59
+    OP_SHR   shift, and go to state 60
+    OP_GT    shift, and go to state 61
+    OP_LT    shift, and go to state 62
+    OP_GE    shift, and go to state 63
+    OP_LE    shift, and go to state 64
+
+    $default  reduce using rule 38 (Expr)
+
+
+State 99
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   39     | Expr OP_NEQ Expr .
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+    OP_ADD   shift, and go to state 57
+    OP_SUB   shift, and go to state 58
+    OP_SHL   shift, and go to state 59
+    OP_SHR   shift, and go to state 60
+    OP_GT    shift, and go to state 61
+    OP_LT    shift, and go to state 62
+    OP_GE    shift, and go to state 63
+    OP_LE    shift, and go to state 64
+
+    $default  reduce using rule 39 (Expr)
+
+
+State 100
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   37     | Expr OP_BIT_AND Expr .
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB       shift, and go to state 53
+    OP_STAR  shift, and go to state 54
+    OP_DIV   shift, and go to state 55
+    OP_MOD   shift, and go to state 56
+    OP_ADD   shift, and go to state 57
+    OP_SUB   shift, and go to state 58
+    OP_SHL   shift, and go to state 59
+    OP_SHR   shift, and go to state 60
+    OP_GT    shift, and go to state 61
+    OP_LT    shift, and go to state 62
+    OP_GE    shift, and go to state 63
+    OP_LE    shift, and go to state 64
+    OP_EQ    shift, and go to state 65
+    OP_NEQ   shift, and go to state 66
+
+    $default  reduce using rule 37 (Expr)
+
+
+State 101
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   36     | Expr OP_BIT_XOR Expr .
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+
+    $default  reduce using rule 36 (Expr)
+
+
+State 102
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   35     | Expr OP_BIT_OR Expr .
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+
+    $default  reduce using rule 35 (Expr)
+
+
+State 103
+
+   34 Expr: Expr . OP_ASSIGN Expr
+   34     | Expr OP_ASSIGN Expr .
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+    $default  reduce using rule 34 (Expr)
+
+
+State 104
+
+   27 Stmt: RETURN Expr SEMI .
+
+    $default  reduce using rule 27 (Stmt)
+
+
+State 105
+
+   28 Stmt: IF LP Expr . RP Stmt
+   29     | IF LP Expr . RP Stmt ELSE Stmt
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    RP          shift, and go to state 111
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+
+State 106
+
+   30 Stmt: WHILE LP Expr . RP Stmt
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    RP          shift, and go to state 112
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+
+State 107
+
+   31 Stmt: FOR LP Expr . SEMI Expr SEMI Expr SEMI RP Stmt
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    SEMI        shift, and go to state 113
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+
+State 108
+
+   59 Args: Expr COMMA . Args
+
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
+
+    Expr  go to state 83
+    Args  go to state 114
+
+
+State 109
+
+   56 Expr: ID LP Args RP .
+
+    $default  reduce using rule 56 (Expr)
+
+
+State 110
+
+   58 Expr: Expr LB Expr RB .
+
+    $default  reduce using rule 58 (Expr)
+
+
+State 111
+
+   28 Stmt: IF LP Expr RP . Stmt
+   29     | IF LP Expr RP . Stmt ELSE Stmt
+
+    INT       shift, and go to state 26
+    FLOAT     shift, and go to state 27
+    CHAR      shift, and go to state 28
+    ID        shift, and go to state 29
+    RETURN    shift, and go to state 35
+    IF        shift, and go to state 36
+    WHILE     shift, and go to state 37
+    FOR       shift, and go to state 38
+    BREAK     shift, and go to state 39
+    CONTINUE  shift, and go to state 40
+    LP        shift, and go to state 30
+    LC        shift, and go to state 20
+
+    BLOCK  go to state 43
+    Stmt   go to state 115
+    Expr   go to state 47
+
+
+State 112
+
+   30 Stmt: WHILE LP Expr RP . Stmt
+
+    INT       shift, and go to state 26
+    FLOAT     shift, and go to state 27
+    CHAR      shift, and go to state 28
+    ID        shift, and go to state 29
+    RETURN    shift, and go to state 35
+    IF        shift, and go to state 36
+    WHILE     shift, and go to state 37
+    FOR       shift, and go to state 38
+    BREAK     shift, and go to state 39
+    CONTINUE  shift, and go to state 40
+    LP        shift, and go to state 30
+    LC        shift, and go to state 20
+
+    BLOCK  go to state 43
+    Stmt   go to state 116
+    Expr   go to state 47
+
+
+State 113
+
+   31 Stmt: FOR LP Expr SEMI . Expr SEMI Expr SEMI RP Stmt
+
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
+
+    Expr  go to state 117
+
+
+State 114
+
+   59 Args: Expr COMMA Args .
+
+    $default  reduce using rule 59 (Args)
+
+
+State 115
+
+   28 Stmt: IF LP Expr RP Stmt .
+   29     | IF LP Expr RP Stmt . ELSE Stmt
+
+    ELSE  shift, and go to state 118
+
+    $default  reduce using rule 28 (Stmt)
+
+
+State 116
+
+   30 Stmt: WHILE LP Expr RP Stmt .
+
+    $default  reduce using rule 30 (Stmt)
+
+
+State 117
+
+   31 Stmt: FOR LP Expr SEMI Expr . SEMI Expr SEMI RP Stmt
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    SEMI        shift, and go to state 119
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+
+State 118
+
+   29 Stmt: IF LP Expr RP Stmt ELSE . Stmt
+
+    INT       shift, and go to state 26
+    FLOAT     shift, and go to state 27
+    CHAR      shift, and go to state 28
+    ID        shift, and go to state 29
+    RETURN    shift, and go to state 35
+    IF        shift, and go to state 36
+    WHILE     shift, and go to state 37
+    FOR       shift, and go to state 38
+    BREAK     shift, and go to state 39
+    CONTINUE  shift, and go to state 40
+    LP        shift, and go to state 30
+    LC        shift, and go to state 20
+
+    BLOCK  go to state 43
+    Stmt   go to state 120
+    Expr   go to state 47
+
+
+State 119
+
+   31 Stmt: FOR LP Expr SEMI Expr SEMI . Expr SEMI RP Stmt
+
+    INT    shift, and go to state 26
+    FLOAT  shift, and go to state 27
+    CHAR   shift, and go to state 28
+    ID     shift, and go to state 29
+    LP     shift, and go to state 30
+
+    Expr  go to state 121
+
+
+State 120
+
+   29 Stmt: IF LP Expr RP Stmt ELSE Stmt .
+
+    $default  reduce using rule 29 (Stmt)
+
+
+State 121
+
+   31 Stmt: FOR LP Expr SEMI Expr SEMI Expr . SEMI RP Stmt
+   34 Expr: Expr . OP_ASSIGN Expr
+   35     | Expr . OP_BIT_OR Expr
+   36     | Expr . OP_BIT_XOR Expr
+   37     | Expr . OP_BIT_AND Expr
+   38     | Expr . OP_EQ Expr
+   39     | Expr . OP_NEQ Expr
+   40     | Expr . OP_GT Expr
+   41     | Expr . OP_LT Expr
+   42     | Expr . OP_GE Expr
+   43     | Expr . OP_LE Expr
+   44     | Expr . OP_SHL Expr
+   45     | Expr . OP_SHR Expr
+   46     | Expr . OP_ADD Expr
+   47     | Expr . OP_SUB Expr
+   48     | Expr . OP_STAR Expr
+   49     | Expr . OP_DIV Expr
+   50     | Expr . OP_MOD Expr
+   58     | Expr . LB Expr RB
+
+    SEMI        shift, and go to state 122
+    LB          shift, and go to state 53
+    OP_STAR     shift, and go to state 54
+    OP_DIV      shift, and go to state 55
+    OP_MOD      shift, and go to state 56
+    OP_ADD      shift, and go to state 57
+    OP_SUB      shift, and go to state 58
+    OP_SHL      shift, and go to state 59
+    OP_SHR      shift, and go to state 60
+    OP_GT       shift, and go to state 61
+    OP_LT       shift, and go to state 62
+    OP_GE       shift, and go to state 63
+    OP_LE       shift, and go to state 64
+    OP_EQ       shift, and go to state 65
+    OP_NEQ      shift, and go to state 66
+    OP_BIT_AND  shift, and go to state 67
+    OP_BIT_XOR  shift, and go to state 68
+    OP_BIT_OR   shift, and go to state 69
+    OP_ASSIGN   shift, and go to state 70
+
+
+State 122
+
+   31 Stmt: FOR LP Expr SEMI Expr SEMI Expr SEMI . RP Stmt
+
+    RP  shift, and go to state 123
+
+
+State 123
+
+   31 Stmt: FOR LP Expr SEMI Expr SEMI Expr SEMI RP . Stmt
+
+    INT       shift, and go to state 26
+    FLOAT     shift, and go to state 27
+    CHAR      shift, and go to state 28
+    ID        shift, and go to state 29
+    RETURN    shift, and go to state 35
+    IF        shift, and go to state 36
+    WHILE     shift, and go to state 37
+    FOR       shift, and go to state 38
+    BREAK     shift, and go to state 39
+    CONTINUE  shift, and go to state 40
+    LP        shift, and go to state 30
+    LC        shift, and go to state 20
+
+    BLOCK  go to state 43
+    Stmt   go to state 124
+    Expr   go to state 47
+
+
+State 124
+
+   31 Stmt: FOR LP Expr SEMI Expr SEMI Expr SEMI RP Stmt .
+
+    $default  reduce using rule 31 (Stmt)

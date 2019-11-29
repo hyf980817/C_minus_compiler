@@ -3,15 +3,36 @@
 %{
     #include <stdio.h>
     #include "lex.yy.c"
+    #define YYSTYPE_IS_DECLARED
+    typedef struct T {
+        union {
+            int type_int;
+            float type_float;
+            char type_char;
+            char* type_str;
+        };
+        char* name;
+        struct T* child;
+        struct T* l_brother;
+        struct T* r_brother;
+    }YYSTYPE;
+
+    typedef YYSTYPE T;
+    T* TreeRoot = NULL; 
+    
 %}
 
-
+/*
 %union {
     int type_int;
     float type_float;
     char type_char;
     char* type_str;
 }
+*/
+
+
+
 
 %token TYPE_INT TYPE_CHAR TYPE_FLOAT
 
@@ -38,6 +59,8 @@
 %left OP_ADD OP_SUB
 %left OP_STAR OP_DIV OP_MOD
 %left LP RP LB RB
+
+
 
  /*消除IF-ELSE二义性*/
 %nonassoc LOWER_THAN_ELSE
@@ -96,7 +119,7 @@ SentenceList : Sentence SentenceList
     | /*empty*/
     ;
  /*Stmt: 语句, 分为定义语句和陈述语句*/
-Sentence : Def
+Sentence : VarDefStmt
     | Stmt
     ;
 
@@ -133,7 +156,7 @@ Expr : Expr OP_ASSIGN Expr
     | LP Expr RP
     | ID
     | FLOAT
-    | INT
+    | INT      {printf("INT: %d" ,$1);}
     | CHAR
     | ID LP Args RP
     | ID LP RP
@@ -144,10 +167,72 @@ Args : Expr COMMA Args
     | Expr
     ;
 %%
-
+int
 yyerror(char* msg)
 {
     fprintf(stderr, "error: %s\n", msg);
     return 0;
 }
 
+
+//初始化一个节点, 目前我们只需要节点信息包括(非)终结符号的名字
+T* initTreeNode(char* name)
+{
+    T* result = (T*)malloc(sizeof(T));
+    result->child = NULL;
+    result->l_brother = NULL;
+    result->r_brother = NULL;
+    result->name = strdup(name);
+
+    return result;
+}
+
+//将c插入为root的child节点
+void insertChild(T* root, T* newnode)
+{
+    root->child = newnode;
+}
+
+//将c插入作为root的brother节点(如果已经有brother节点,则插入到最右边)
+void insertBrotherToRight(T* root, T* newnode)
+{
+    T* brother_end = root;
+    while(brother_end -> r_brother != NULL)
+        brother_end = brother_end -> r_brother;
+    brother_end->r_brother = newnode;
+    newnode->l_brother = brother_end;
+}
+
+//将c插入作为root的brother节点(插入到root之后, 如果root已经有brother节点, c的brother将指向原本的root的brother)
+void insertBrotherToRight(T* root, T* newnode)
+{
+    newnode->r_brother = root->r_brother;
+    newnode->r_brother->l_brother = newnode;
+    root->r_brother = newnode;
+    newnode->l_brother = root;
+    
+}
+
+
+/*更新语法树
+  两种情况:
+  1. 压入新的符号, isReduction为false, 这时只需要提供新的节点, 将其插入为root的最右端brother
+  2. 进行规约, isReduction为true. 此时, root最右侧的reduceLength个节点需要按顺序成为新插入的newnode的child.
+*/
+void updateSyntaxTree(T* root, T* newnode, bool isReduction, int reduceLength)
+{
+    T* end = root;
+    while(end->r_brother != NULL)
+        end = end->r_brother;
+
+    //向前回溯reduceLength - 1步
+    int i = 0;
+    while(i < reduceLength - 1)
+        end = end->l_brother;
+
+    //此时end指向的节点就是newnode的child
+    newnode->child = end;
+    end->l_brother->r_brother = newnode;
+    newnode->l_brother = end->l_brother;
+    end->l_brother = NULL;
+}
