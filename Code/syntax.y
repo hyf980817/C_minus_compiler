@@ -4,7 +4,6 @@
     #include <stdio.h>
     #include "lex.yy.c"
     T* TreeRoot = NULL; 
-
     
 %}
 
@@ -55,7 +54,7 @@
 
 %%
  /*Program:开始符号, 整个程序*/
-Program : DefDecList    
+Program : DefDecList  {   
     ;
 
  /*DefDecList: 定义声明串, 由0个或多个DefDec(定义声明)组成*/
@@ -205,10 +204,18 @@ void insertBrotherToLeft(T* root, T* newnode)
   1. 压入新的符号, isReduction为false, 这时只需要提供新的节点, 将其插入为root的最右端brother
   2. 进行规约, isReduction为true. 此时, root最右侧的reduceLength个节点需要按顺序成为新插入的newnode的child.
 */
-void updateSyntaxTree(T* root, T* newnode, int isReduction, int reduceLength)
+T* updateSyntaxTree(T* root, T* newnode, int isReduction, int reduceLength)
 {
+    if(root == NULL)
+    {
+        if(isReduction)
+            printf("Error occurs in function: updateSyntaxTree!!!");
+        root = newnode;
+        return root;
+    }
+    
     T* end = root;
-
+    
     while(end->r_brother != NULL)
         end = end->r_brother;
     if(isReduction)
@@ -227,8 +234,8 @@ void updateSyntaxTree(T* root, T* newnode, int isReduction, int reduceLength)
     }
     else
     {
-        end->r_brother = newnode;
-        newnode->l_brother = end;
+        insertBrotherToRight(root, newnode);
     }
+    return root;
 
 }
