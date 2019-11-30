@@ -76,7 +76,7 @@ VarDecList : VarDec
     | VarDec COMMA VarDecList
     ;
  /*TYPE: 类型标识符*/
-TYPE : TYPE_INT     {$$ = initTreeNode("TYPE"); insertChild(&$$, &$1);}
+TYPE : TYPE_INT  
     | TYPE_FLOAT   
     | TYPE_CHAR;    
 
@@ -144,7 +144,7 @@ Expr : Expr OP_ASSIGN Expr
     | LP Expr RP
     | ID
     | FLOAT
-    | INT      {printf("INT: %d" ,$1);}
+    | INT      
     | CHAR
     | ID LP Args RP
     | ID LP RP

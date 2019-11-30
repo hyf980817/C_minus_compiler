@@ -95,7 +95,7 @@ continue        {yylval = initTreeNode("CONTINUE"); return CONTINUE;}
 
 %%
 //初始化一个节点, 目前我们只需要节点信息包括(非)终结符号的名字
-T initTreeNode(char* name)
+T* initTreeNode(char* name)
 {
     T* result = (T*)malloc(sizeof(T));
     result->child = NULL;
@@ -103,7 +103,7 @@ T initTreeNode(char* name)
     result->r_brother = NULL;
     result->name = strdup(name);
 
-    return *result;
+    return result;
 }
 
 //将c插入为root的child节点
