@@ -1,3 +1,4 @@
+#pragma once
 typedef struct T {
     union {
         int type_int;
@@ -12,8 +13,7 @@ typedef struct T {
 }T;
 
 T* initTreeNode(char* name);
-void insertChild(T* root, T* newnode);
-void insertBrotherToLeft(T* root, T* newnode);
-
+void insertChild(T* root, int n , ...);
+void insertBrotherToRight(T* root, T* newnode);
 
 

@@ -1,0 +1,63 @@
+Starting parse
+Entering state 0
+Reading a token: Next token is token TYPE_INT (1.1-2: )
+Shifting token TYPE_INT (1.1-2: )
+Entering state 1
+Reducing stack by rule 9 (line 86):
+   $1 = token TYPE_INT (1.1-2: )
+-> $$ = nterm TYPE (1.1-2: )
+Stack now 0
+Entering state 8
+Reading a token: Next token is token ID (1.5-7: )
+Shifting token ID (1.5-7: )
+Entering state 11
+Reading a token: Next token is token LP (1.9: )
+Shifting token LP (1.9: )
+Entering state 15
+Reading a token: Next token is token RP (1.10: )
+Shifting token RP (1.10: )
+Entering state 22
+Reducing stack by rule 16 (line 98):
+   $1 = token ID (1.5-7: )
+   $2 = token LP (1.9: )
+   $3 = token RP (1.10: )
+-> $$ = nterm FunDec (1.5-9: )
+Stack now 0 8
+Entering state 14
+Reading a token: Next token is token LC (2.1: )
+Shifting token LC (2.1: )
+Entering state 20
+Reading a token: Next token is token TYPE_INT (3.2-3: )
+Shifting token TYPE_INT (3.2-3: )
+Entering state 1
+Reducing stack by rule 9 (line 86):
+   $1 = token TYPE_INT (3.2-3: )
+-> $$ = nterm TYPE (3.2-3: )
+Stack now 0 8 14 20
+Entering state 42
+Reading a token: Next token is token ID (3.6: )
+Shifting token ID (3.6: )
+Entering state 32
+Reading a token: Next token is token OP_ASSIGN (3.8: )
+Shifting token OP_ASSIGN (3.8: )
+Entering state 16
+Reading a token: Next token is token INT (3.10: )
+Shifting token INT (3.10: )
+Entering state 26
+Reducing stack by rule 54 (line 155):
+   $1 = token INT (3.10: )
+-> $$ = nterm Expr (3.10: )
+Stack now 0 8 14 20 42 32 16
+Entering state 31
+Reading a token: Next token is token SEMI (3.11: )
+Reducing stack by rule 13 (line 92):
+   $1 = token ID (3.6: )
+   $2 = token OP_ASSIGN (3.8: )
+   $3 = nterm Expr (3.10: )
+-> $$ = nterm VarDec (3.6-9: )
+Stack now 0 8 14 20 42
+Entering state 13
+Next token is token SEMI (3.11: )
+Reducing stack by rule 7 (line 82):
+   $1 = nterm VarDec (3.6-9: )
+parser: syntax.y:192: insertChild: Assertion `root->child == NULL' failed.

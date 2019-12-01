@@ -65,12 +65,31 @@
 #line 3 "syntax.y" /* yacc.c:339  */
 
     #include <stdio.h>
-    #include "lex.yy.c"
+    #include <stdarg.h> 
+    #include <string.h>  
+    #include <assert.h>
+    typedef struct T {
+        union {
+            int type_int;
+            float type_flat;
+            char type_char;
+            char* type_str;
+        };
+        char *name;
+        struct T* child;
+        struct T* l_brother;
+        struct T* r_brother;
+    }T;
+    T* initTreeNode(char* name);
+    void insertChild(T* root, int n , ...);
+    void insertBrotherToRight(T* root, T* newnode);
     T* TreeRoot = NULL; 
 
-    
 
-#line 74 "syntax.tab.c" /* yacc.c:339  */
+    int yyerror(char* msg);
+    int yylex(void);
+
+#line 93 "syntax.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -155,7 +174,7 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef struct T YYSTYPE;
+typedef struct T* YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -183,7 +202,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 187 "syntax.tab.c" /* yacc.c:358  */
+#line 206 "syntax.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -487,13 +506,13 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    58,    58,    62,    63,    67,    71,    72,    75,    76,
-      79,    79,    79,    82,    83,    84,    88,    89,    92,    93,
-      97,   100,   104,   105,   108,   109,   114,   115,   116,   117,
-     118,   119,   120,   121,   122,   125,   126,   127,   128,   129,
-     130,   131,   132,   133,   134,   135,   136,   137,   138,   139,
+       0,    65,    65,    69,    70,    74,    78,    79,    82,    83,
+      86,    87,    88,    91,    92,    93,    97,    98,   101,   102,
+     106,   110,   114,   115,   118,   119,   124,   125,   126,   127,
+     128,   129,   130,   131,   132,   135,   136,   137,   138,   139,
      140,   141,   142,   143,   144,   145,   146,   147,   148,   149,
-     152,   153
+     150,   151,   152,   153,   154,   155,   156,   157,   158,   159,
+     162,   163
 };
 #endif
 
@@ -1505,14 +1524,368 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 55:
+        case 2:
+#line 65 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0])); TreeRoot = (yyval);}
+#line 1531 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 3:
+#line 69 "syntax.y" /* yacc.c:1646  */
+    {;}
+#line 1537 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 4:
+#line 70 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 2, (yyvsp[-1]), (yyvsp[0]));}
+#line 1543 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 5:
+#line 74 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1549 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 6:
+#line 78 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1555 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 7:
+#line 79 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1561 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 8:
+#line 82 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1567 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 9:
+#line 83 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1573 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 10:
+#line 86 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1579 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 11:
+#line 87 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1585 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 12:
+#line 88 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1591 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 13:
+#line 91 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1597 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 14:
+#line 92 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1603 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 15:
+#line 93 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 4, (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1609 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 16:
+#line 97 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 4, (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1615 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 17:
+#line 98 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1621 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 18:
+#line 101 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1627 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 19:
+#line 102 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1633 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 20:
+#line 106 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 2, (yyvsp[-1]), (yyvsp[0]));}
+#line 1639 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 21:
+#line 110 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1645 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 22:
+#line 114 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 2, (yyvsp[-1]), (yyvsp[0]));}
+#line 1651 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 23:
+#line 115 "syntax.y" /* yacc.c:1646  */
+    {;}
+#line 1657 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 24:
+#line 118 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1663 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 25:
+#line 119 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1669 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 26:
+#line 124 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 2, (yyvsp[-1]), (yyvsp[0]));}
+#line 1675 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 27:
+#line 125 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1681 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 28:
+#line 126 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1687 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 29:
+#line 127 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 5, (yyvsp[-4]), (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1693 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 30:
+#line 128 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 7, (yyvsp[-6]), (yyvsp[-5]), (yyvsp[-4]), (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1699 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 31:
+#line 129 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 5, (yyvsp[-4]), (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1705 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 32:
+#line 130 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 10, (yyvsp[-9]), (yyvsp[-8]), (yyvsp[-7]), (yyvsp[-6]), (yyvsp[-5]), (yyvsp[-4]), (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1711 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 33:
+#line 131 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 2, (yyvsp[-1]), (yyvsp[0]));}
+#line 1717 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 34:
+#line 132 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 2, (yyvsp[-1]), (yyvsp[0]));}
+#line 1723 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 35:
+#line 135 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1729 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 36:
+#line 136 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1735 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 137 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1741 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 138 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1747 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 39:
+#line 139 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1753 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 40:
+#line 140 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1759 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 41:
+#line 141 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1765 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 42:
+#line 142 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1771 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 43:
+#line 143 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1777 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 44:
+#line 144 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1783 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 45:
 #line 145 "syntax.y" /* yacc.c:1646  */
-    {printf("INT: %d" ,(yyvsp[0].type_int));}
-#line 1512 "syntax.tab.c" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1789 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 46:
+#line 146 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1795 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 47:
+#line 147 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1801 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 48:
+#line 148 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1807 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 49:
+#line 149 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1813 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 50:
+#line 150 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1819 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 51:
+#line 151 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1825 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 52:
+#line 152 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1831 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 53:
+#line 153 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1837 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 54:
+#line 154 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1843 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 55:
+#line 155 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1849 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 56:
+#line 156 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1855 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 57:
+#line 157 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 4, (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1861 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 158 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1867 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 159 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 4, (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1873 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 60:
+#line 162 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 3, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0]));}
+#line 1879 "syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 163 "syntax.y" /* yacc.c:1646  */
+    {insertChild((yyval), 1, (yyvsp[0]));}
+#line 1885 "syntax.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1516 "syntax.tab.c" /* yacc.c:1646  */
+#line 1889 "syntax.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1747,15 +2120,13 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 155 "syntax.y" /* yacc.c:1906  */
+#line 165 "syntax.y" /* yacc.c:1906  */
 
-int
-yyerror(char* msg)
+int yyerror(char* msg)
 {
     fprintf(stderr, "error: %s\n", msg);
     return 0;
 }
-
 
 //初始化一个节点, 目前我们只需要节点信息包括(非)终结符号的名字
 T* initTreeNode(char* name)
@@ -1769,62 +2140,74 @@ T* initTreeNode(char* name)
     return result;
 }
 
-//将c插入为root的child节点
-void insertChild(T* root, T* newnode)
+//将一个或多个节点插入为root的child节点
+void insertChild(T* root, int n, ...)
 {
-    root->child = newnode;
+    int i = 0;
+    va_list ap;
+    va_start(ap, n);
+    
+    T* child = va_arg(ap, struct T*);
+    assert(root->child == NULL);
+    root->child = child;
+    fprintf(stdout, "insert %s in %s as 0 child\n", child->name, root->name);
+    for(i = 1; i < n; i++)
+    {
+        child = va_arg(ap, struct T*);
+        insertBrotherToRight(root->child, child);
+        fprintf(stdout, "insert %s in %s as %d child\n", child->name, root->name, i);
+    }
+
+    va_end(ap);       
 }
 
 //将c插入作为root的brother节点(如果已经有brother节点,则插入到最右边)
 void insertBrotherToRight(T* root, T* newnode)
 {
     T* brother_end = root;
-    while(brother_end -> r_brother != NULL)
+    int i = 0;
+    while(brother_end -> r_brother != NULL){
         brother_end = brother_end -> r_brother;
+        i++;
+        printf("go to right:%d\n",i);
+    }
     brother_end->r_brother = newnode;
     newnode->l_brother = brother_end;
 }
 
-//将c插入作为root的brother节点(插入到root之后, 如果root已经有brother节点, c的brother将指向原本的root的brother)
-void insertBrotherToLeft(T* root, T* newnode)
+void printTree(T* root, int level, FILE *f)
 {
-    newnode->r_brother = root->r_brother;
-    newnode->r_brother->l_brother = newnode;
-    root->r_brother = newnode;
-    newnode->l_brother = root;
-    
+    for(int i = 0; i < level; i++)
+        fprintf(f,"    ");
+    fprintf(f,"%s\n", root->name);
+    T* child = root->child;
+    while(child != NULL)
+    {
+        printTree(child, level + 1, f);
+        child = child->r_brother;
+        
+    }
 }
 
 
-/*更新语法树
-  两种情况:
-  1. 压入新的符号, isReduction为false, 这时只需要提供新的节点, 将其插入为root的最右端brother
-  2. 进行规约, isReduction为true. 此时, root最右侧的reduceLength个节点需要按顺序成为新插入的newnode的child.
-*/
-void updateSyntaxTree(T* root, T* newnode, int isReduction, int yyn)
+int main(int argc, char** argv)
 {
-    T* end = root;
-
-    while(end->r_brother != NULL)
-        end = end->r_brother;
-    if(isReduction)
+    freopen("out.txt", "w",stdout);
+    freopen("err.txt", "w",stderr);
+    
+    if(argc <= 1) 
+        return 1;
+    FILE* f = fopen(argv[1], "r");
+    if(!f)
     {
-
-        //向前回溯reduceLength - 1步
-        int i = 0;
-        while(i < reduceLength - 1)
-            end = end->l_brother;
-
-        //此时end指向的节点就是newnode的child
-        newnode->child = end;
-        end->l_brother->r_brother = newnode;
-        newnode->l_brother = end->l_brother;
-        end->l_brother = NULL;
+        perror(argv[1]);
+        return 1;
     }
-    else
-    {
-        end->r_brother = newnode;
-        newnode->l_brother = end;
-    }
+    yyrestart(f);
+    yydebug = 1;
+    yyparse();
+    //FILE* f1 = fopen("parser.result", "w");
+    //printTree(TreeRoot, 0, f1);
 
+    return 0;
 }

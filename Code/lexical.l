@@ -9,6 +9,7 @@
         yylloc.first_column = yycolumn; \
         yylloc.last_column = yycolumn + yyleng - 1; \
         yycolumn += yyleng;
+    
 %}
 
 %option yylineno
@@ -42,19 +43,19 @@ break           {yylval = initTreeNode("BREAK"); return BREAK;}
 continue        {yylval = initTreeNode("CONTINUE"); return CONTINUE;}
 
     /*标识符*/
-{letter}({digit}|{letter})*     {yylval = initTreeNode("ID"); yylval.type_str = strdup(yytext); return ID;}
+{letter}({digit}|{letter})*     {yylval = initTreeNode("ID"); return ID;}
 
     /*整型*/
-{non_zero}{digits}|{digit}  {yylval = initTreeNode("INT"); yylval.type_int = atoi(yytext); return INT;}
+{non_zero}{digits}|{digit}  {yylval = initTreeNode("INT"); return INT;}
 
     /*浮点*/
-({non_zero}{digits}|{digit})"."{digits}|"."{digits}     {yylval = initTreeNode("FLOAT"); yylval.type_str = strdup(yytext); return FLOAT;}
+({non_zero}{digits}|{digit})"."{digits}|"."{digits}     {yylval = initTreeNode("FLOAT"); return FLOAT;}
 
     /*字符*/
-\'[a-zA-Z]\'        {yylval = initTreeNode("CHAR"); yylval.type_char = yytext[0]; return CHAR;}
+\'[a-zA-Z]\'        {yylval = initTreeNode("CHAR"); return CHAR;}
 
     /*字符串*/
-\"[^\n]\"           {yylval = initTreeNode("STRING"); yylval.type_str = strdup(yytext); return STRING;}
+\"[^\n]\"           {yylval = initTreeNode("STRING");return STRING;}
     /*符号*/
 "."             {yylval = initTreeNode("POINT"); return POINT;}
 ";"             {yylval = initTreeNode("SEMI"); return SEMI;}
@@ -94,44 +95,4 @@ continue        {yylval = initTreeNode("CONTINUE"); return CONTINUE;}
 
 
 %%
-//初始化一个节点, 目前我们只需要节点信息包括(非)终结符号的名字
-T* initTreeNode(char* name)
-{
-    T* result = (T*)malloc(sizeof(T));
-    result->child = NULL;
-    result->l_brother = NULL;
-    result->r_brother = NULL;
-    result->name = strdup(name);
-
-    return result;
-}
-
-//将一个或多个节点插入为root的child节点
-void insertChild(T* root, int n, ...)
-{
-    int i = 0;
-    va_list ap;
-    va_start(ap, n);
-    
-    T* child = va_arg(ap, T*);
-
-    root->child = child;
-    for(i = 1; i < n; i++)
-    {
-        child = va_arg(ap, T*);
-        insertBrotherToRight(root->child, child);
-    }
-
-    va_end(ap);       
-}
-
-//将c插入作为root的brother节点(如果已经有brother节点,则插入到最右边)
-void insertBrotherToRight(T* root, T* newnode)
-{
-    T* brother_end = root;
-    while(brother_end -> r_brother != NULL)
-        brother_end = brother_end -> r_brother;
-    brother_end->r_brother = newnode;
-    newnode->l_brother = brother_end;
-}
 

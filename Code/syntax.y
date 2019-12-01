@@ -2,29 +2,39 @@
 
 %{
     #include <stdio.h>
-    #include "lex.yy.c"
+    #include <stdarg.h> 
+    #include <string.h>  
+    #include <assert.h>
+    typedef struct T {
+        union {
+            int type_int;
+            float type_flat;
+            char type_char;
+            char* type_str;
+        };
+        char *name;
+        struct T* child;
+        struct T* l_brother;
+        struct T* r_brother;
+    }T;
+    T* initTreeNode(char* name);
+    void insertChild(T* root, int n , ...);
+    void insertBrotherToRight(T* root, T* newnode);
     T* TreeRoot = NULL; 
-    
-%}
 
-/*
-%union {
-    int type_int;
-    float type_float;
-    char type_char;
-    char* type_str;
-}
-*/
+
+    int yyerror(char* msg);
+    int yylex(void);
+%}
 
 %define api.value.type {struct T*}
 
-
 %token TYPE_INT TYPE_CHAR TYPE_FLOAT
 
-%token <type_int> INT
-%token <type_float> FLOAT
-%token <type_char> CHAR
-%token <type_str> ID STRING
+%token INT
+%token FLOAT
+%token CHAR
+%token ID STRING
 %token VOID
 %token RETURN IF ELSE WHILE FOR BREAK CONTINUE
 
@@ -45,9 +55,6 @@
 %left OP_STAR OP_DIV OP_MOD
 %left LP RP LB RB
 
-%type <T*> Program DefDecList DefDec VarDefStmt VarDecList TYPE FunDec VarDec 
-%type <T*> Expr ParaList ParaDec Args BLOCK Sentence SentenceList Stmt StmtList 
-
  /*消除IF-ELSE二义性*/
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
@@ -59,7 +66,7 @@ Program : DefDecList  {insertChild($$, 1, $1); TreeRoot = $$;}
     ;
 
  /*DefDecList: 定义声明串, 由0个或多个DefDec(定义声明)组成*/
-DefDecList :  /*empty*/
+DefDecList :  /*empty*/ {;}
     | DefDec DefDecList {insertChild($$, 2, $1, $2);}
     ;
 
@@ -82,7 +89,7 @@ TYPE : TYPE_INT      {insertChild($$, 1, $1);}
     ;
  /*VarDec: 对一个变量的定义,标识符或者数组, 如int a中的a, int a[3]中的a[3]*/
 VarDec : ID     {insertChild($$, 1, $1);}        
-    | ID OP_ASSIGN Expr     {insertChild($$, 4, $1, $2, $3, $4);}
+    | ID OP_ASSIGN Expr     {insertChild($$, 3, $1, $2, $3);}
     | VarDec LB INT RB     {insertChild($$, 4, $1, $2, $3, $4);}
     ;
 
@@ -105,7 +112,7 @@ BLOCK : LC SentenceList RC     {insertChild($$, 3, $1, $2, $3);}
 
  /* StmtList: 语句串*/
 SentenceList : Sentence SentenceList     {insertChild($$, 2, $1, $2);}
-    | /*empty*/
+    | /*empty*/{;}
     ;
  /*Stmt: 语句, 分为定义语句和陈述语句*/
 Sentence : VarDefStmt     {insertChild($$, 1, $1);}
@@ -156,10 +163,92 @@ Args : Expr COMMA Args     {insertChild($$, 3, $1, $2, $3);}
     | Expr     {insertChild($$, 1, $1);}
     ;
 %%
-int
-yyerror(char* msg)
+int yyerror(char* msg)
 {
     fprintf(stderr, "error: %s\n", msg);
     return 0;
 }
 
+//初始化一个节点, 目前我们只需要节点信息包括(非)终结符号的名字
+T* initTreeNode(char* name)
+{
+    T* result = (T*)malloc(sizeof(T));
+    result->child = NULL;
+    result->l_brother = NULL;
+    result->r_brother = NULL;
+    result->name = strdup(name);
+
+    return result;
+}
+
+//将一个或多个节点插入为root的child节点
+void insertChild(T* root, int n, ...)
+{
+    int i = 0;
+    va_list ap;
+    va_start(ap, n);
+    
+    T* child = va_arg(ap, struct T*);
+    assert(root->child == NULL);
+    root->child = child;
+    fprintf(stdout, "insert %s in %s as 0 child\n", child->name, root->name);
+    for(i = 1; i < n; i++)
+    {
+        child = va_arg(ap, struct T*);
+        insertBrotherToRight(root->child, child);
+        fprintf(stdout, "insert %s in %s as %d child\n", child->name, root->name, i);
+    }
+
+    va_end(ap);       
+}
+
+//将c插入作为root的brother节点(如果已经有brother节点,则插入到最右边)
+void insertBrotherToRight(T* root, T* newnode)
+{
+    T* brother_end = root;
+    int i = 0;
+    while(brother_end -> r_brother != NULL){
+        brother_end = brother_end -> r_brother;
+        i++;
+        printf("go to right:%d\n",i);
+    }
+    brother_end->r_brother = newnode;
+    newnode->l_brother = brother_end;
+}
+
+void printTree(T* root, int level, FILE *f)
+{
+    for(int i = 0; i < level; i++)
+        fprintf(f,"    ");
+    fprintf(f,"%s\n", root->name);
+    T* child = root->child;
+    while(child != NULL)
+    {
+        printTree(child, level + 1, f);
+        child = child->r_brother;
+        
+    }
+}
+
+
+int main(int argc, char** argv)
+{
+    freopen("out.txt", "w",stdout);
+    freopen("err.txt", "w",stderr);
+    
+    if(argc <= 1) 
+        return 1;
+    FILE* f = fopen(argv[1], "r");
+    if(!f)
+    {
+        perror(argv[1]);
+        return 1;
+    }
+    yyrestart(f);
+    yydebug = 1;
+    yyparse();
+    //FILE* f1 = fopen("parser.result", "w");
+    //printTree(TreeRoot, 0, f1);
+
+    return 0;
+}
