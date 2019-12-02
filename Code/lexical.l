@@ -26,7 +26,7 @@ digits [0-9]+
 %%
 
 (" "|"\t")+     {;}
-\n            {yycolumn = 1;}
+\n            {fprintf(stderr, "get a line change"); yycolumn = 1;}
     /*类型*/
 int             {yylval = initTreeNode("TYPE_INT"); return TYPE_INT;}
 char            {yylval = initTreeNode("TYPE_CHAR"); return TYPE_CHAR;}
