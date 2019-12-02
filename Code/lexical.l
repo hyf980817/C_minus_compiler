@@ -1,8 +1,8 @@
 %{
     #include <stdio.h>
-    #include "Tree.h"
     #include "syntax.tab.h"
-    #include <stdarg.h>   
+    #include <stdarg.h>
+    #include "Tree.h"
     int yycolumn = 1;
     #define YY_USER_ACTION \
         yylloc.first_line = yylloc.last_line = yylineno; \
@@ -26,6 +26,7 @@ digits [0-9]+
 %%
 
 (" "|"\t")+     {;}
+"/*"(.)*"*/"  {;}
 \n            {fprintf(stderr, "get a line change"); yycolumn = 1;}
     /*类型*/
 int             {yylval = initTreeNode("TYPE_INT"); return TYPE_INT;}
@@ -91,7 +92,7 @@ continue        {yylval = initTreeNode("CONTINUE"); return CONTINUE;}
 
 
 
-.           {printf("Unknown at line %d:%c", yylineno, yytext[0]);}
+.           {fprintf(stdout, "Lexical Error at line %d:%c", yylineno, yytext[0]);}
 
 
 %%

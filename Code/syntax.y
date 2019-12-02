@@ -5,21 +5,8 @@
     #include <stdarg.h> 
     #include <string.h>  
     #include <assert.h>
-    typedef struct T {
-        union {
-            int type_int;
-            float type_flat;
-            char type_char;
-            char* type_str;
-        };
-        char *name;
-        struct T* child;
-        struct T* l_brother;
-        struct T* r_brother;
-    }T;
-    T* initTreeNode(const char* const name);
-    void insertChild(T* root, int n , ...);
-    void insertBrotherToRight(T* root, T* newnode);
+    #include "Tree.h"
+
     T* TreeRoot = NULL; 
 
 
@@ -127,9 +114,10 @@ Stmt : Expr SEMI     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, 
     | IF LP Expr RP Stmt  %prec LOWER_THAN_ELSE     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 5, $1, $2, $3, $4, $5);}
     | IF LP Expr RP Stmt ELSE Stmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 7, $1, $2, $3, $4, $5, $6, $7);}
     | WHILE LP Expr RP Stmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 5, $1, $2, $3, $4, $5);}
-    | FOR LP Expr SEMI Expr SEMI Expr SEMI RP Stmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 10, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);}
+    | FOR LP Expr SEMI Expr SEMI Expr RP Stmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 9, $1, $2, $3, $4, $5, $6, $7, $8, $9);}
     | BREAK SEMI     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
     | CONTINUE SEMI     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
+    | Stmt error {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
     ;
 
 Expr : Expr OP_ASSIGN Expr     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
@@ -165,7 +153,7 @@ Args : Expr COMMA Args     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($
 %%
 int yyerror(char* msg)
 {
-    fprintf(stderr, "error: %s\n", msg);
+    fprintf(stderr, "Syntax Error at line d column d: %s\n", msg);
     return 0;
 }
 
