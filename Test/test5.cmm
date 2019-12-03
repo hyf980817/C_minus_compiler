@@ -1,0 +1,13 @@
+/*测试数组*/  
+int main()
+{
+    int c = 3;
+    ind d[12];
+
+    while(c < a) {
+        c = c+1;
+        d[c] = d[] - 1;
+    }
+
+    return d;
+}

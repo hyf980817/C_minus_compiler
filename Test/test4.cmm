@@ -1,0 +1,6 @@
+/*测试不规范的命名*/
+int main2()
+{
+    int _wrong;
+    return 1;
+}

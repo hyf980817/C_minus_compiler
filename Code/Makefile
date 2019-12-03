@@ -43,7 +43,7 @@ syntax-c-debug: $(YFILE)
 test:
 	./parser ../Test/test1.cmm
 clean:
-	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output
+	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output parser.tree
 	rm -f $(OBJS) $(OBJS:.o=.d)
 	rm -f $(LFC) $(YFC) $(YFC:.c=.h)
 	rm -f *~
