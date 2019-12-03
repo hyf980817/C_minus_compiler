@@ -27,7 +27,7 @@ digits [0-9]+
 
 (" "|"\t")+     {;}
 "/*"(.)*"*/"  {;}
-\n            {fprintf(stderr, "get a line change"); yycolumn = 1;}
+\n            {yycolumn = 1;}
     /*类型*/
 int             {yylval = initTreeNode("TYPE_INT"); return TYPE_INT;}
 char            {yylval = initTreeNode("TYPE_CHAR"); return TYPE_CHAR;}
@@ -92,7 +92,7 @@ continue        {yylval = initTreeNode("CONTINUE"); return CONTINUE;}
 
 
 
-.           {fprintf(stdout, "Lexical Error at line %d:%c", yylineno, yytext[0]);}
+.           {fprintf(stdout, "Error at line %d, unknown token:%c", yylineno, yytext[0]);}
 
 
 %%

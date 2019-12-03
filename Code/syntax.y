@@ -5,16 +5,18 @@
     #include <stdarg.h> 
     #include <string.h>  
     #include <assert.h>
-    #include "Tree.h"
+    #include "lex.yy.c"
+    //#include "Tree.h"
 
     T* TreeRoot = NULL; 
+    
 
-
-    int yyerror(char* msg);
+    int yyerror(const char* msg);
     int yylex(void);
 %}
 
 %define api.value.type {struct T*}
+%define parse.error verbose
 
 %token TYPE_INT TYPE_CHAR TYPE_FLOAT
 
@@ -104,6 +106,8 @@ SentenceList : Sentence SentenceList     {$$ = initTreeNode(yytname[yyr1[yyn]]);
  /*Stmt: 语句, 分为定义语句和陈述语句*/
 Sentence : VarDefStmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
     | Stmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
+    | error SEMI {$$ = initTreeNode(yytname[yyr1[yyn]]);}
+    | error {$$ = initTreeNode(yytname[yyr1[yyn]]);}
     ;
 
 
@@ -117,7 +121,6 @@ Stmt : Expr SEMI     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, 
     | FOR LP Expr SEMI Expr SEMI Expr RP Stmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 9, $1, $2, $3, $4, $5, $6, $7, $8, $9);}
     | BREAK SEMI     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
     | CONTINUE SEMI     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
-    | Stmt error {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
     ;
 
 Expr : Expr OP_ASSIGN Expr     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
@@ -151,9 +154,9 @@ Args : Expr COMMA Args     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($
     | Expr     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
     ;
 %%
-int yyerror(char* msg)
+int yyerror(const char* msg)
 {
-    fprintf(stderr, "Syntax Error at line d column d: %s\n", msg);
+    fprintf(stderr, "Error at line %d: %s\n", yylineno, msg);
     return 0;
 }
 
@@ -181,12 +184,12 @@ void insertChild(T* root, int n, ...)
     assert(root->child == NULL);
     root->child = child;
   
-    fprintf(stdout, "insert %s in %s as 0 child\n", child->name, root->name);
+    //fprintf(stdout, "insert %s in %s as 0 child\n", child->name, root->name);
     for(i = 1; i < n; i++)
     {
         child = va_arg(ap, struct T*);
         insertBrotherToRight(root->child, child);
-        fprintf(stdout, "insert %s in %s as %d child\n", child->name, root->name, i);
+        //fprintf(stdout, "insert %s in %s as %d child\n", child->name, root->name, i);
     }
 
     va_end(ap);       
@@ -222,8 +225,8 @@ void printTree(T* root, int level, FILE *f)
 
 int main(int argc, char** argv)
 {
-    freopen("out.txt", "w",stdout);
-    freopen("err.txt", "w",stderr);
+    //freopen("out.txt", "w",stdout);
+    //freopen("err.txt", "w",stderr);
     
     if(argc <= 1) 
         return 1;
@@ -234,9 +237,9 @@ int main(int argc, char** argv)
         return 1;
     }
     yyrestart(f);
-    yydebug = 1;
+    yydebug = 0;
     yyparse();
-    FILE* f1 = fopen("parser.result", "w");
+    FILE* f1 = fopen("parser.tree", "w");
     printTree(TreeRoot, 0, f1);
 
     return 0;

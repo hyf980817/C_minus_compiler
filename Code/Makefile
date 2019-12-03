@@ -20,14 +20,21 @@ YFO = $(YFC:.c=.o)
 parser: syntax $(filter-out $(LFO),$(OBJS))
 	$(CC) -o parser $(filter-out $(LFO),$(OBJS)) -lfl -ly
 
+parser-debug: syntax-c-debug lexical
+	$(CC) -o parser $(YFC) -lfl -ly
+
 syntax: lexical syntax-c
 	$(CC) -c $(YFC) -o $(YFO)
+
 
 lexical: $(LFILE)
 	$(FLEX) -o $(LFC) $(LFILE)
 
 syntax-c: $(YFILE)
 	$(BISON) -o $(YFC) -d -v $(YFILE)
+
+syntax-c-debug: $(YFILE)
+	$(BISON) -o $(YFC) -d -v -t $(YFILE)
 
 -include $(patsubst %.o, %.d, $(OBJS))
 
