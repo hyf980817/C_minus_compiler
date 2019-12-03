@@ -3,5 +3,5 @@ int main()
     int a,b;
     float c;
     a = b+c;
-    [];
+    int a[3];
 }
