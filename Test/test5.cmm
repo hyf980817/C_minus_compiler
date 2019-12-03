@@ -2,7 +2,7 @@
 int main()
 {
     int c = 3;
-    ind d[12];
+    int d[12];
 
     while(c < a) {
         c = c+1;

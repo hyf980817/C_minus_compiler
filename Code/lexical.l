@@ -16,7 +16,7 @@
 
 
 
-letter [_a-zA-Z]
+letter [a-zA-Z]
 non_zero [1-9]
 zero [0]
 digit [0-9]
