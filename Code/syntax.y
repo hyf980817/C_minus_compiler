@@ -6,7 +6,6 @@
     #include <string.h>  
     #include <assert.h>
     #include "lex.yy.c"
-    //#include "Tree.h"
 
     T* TreeRoot = NULL; 
     
