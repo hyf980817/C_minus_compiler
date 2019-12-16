@@ -1,3 +1,5 @@
+#ifndef _SYNTAX_TREE_
+#define _SYNTAX_TREE_
 typedef struct T {
     union {
         int type_int;
@@ -14,3 +16,4 @@ typedef struct T {
 T* initTreeNode(const char* const name);
 void insertChild(T* root, int n , ...);
 void insertBrotherToRight(T* root, T* newnode);
+#endif

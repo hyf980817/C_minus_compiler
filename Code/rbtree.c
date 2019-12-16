@@ -400,9 +400,12 @@ static Node* create_rbtree_node(KeyType key, Node *parent, Node *left, Node* rig
  *     0，插入成功
  *     -1，插入失败
  */
-int insert_rbtree(RBRoot *root, KeyType key)
+int insert_rbtree(RBRoot *root, KeyType key, int symbol_type, T* syntaxTree_nodev)
 {
     Node *node;    // 新建结点
+    symbol v;
+    v.type = symbol_type;
+    v.syntaxTreeNode = syntaxTree_nodev;
 
     // 不允许插入相同键值的节点。
     // (若想允许插入相同键值的节点，注释掉下面两句话即可！)
@@ -412,7 +415,7 @@ int insert_rbtree(RBRoot *root, KeyType key)
     // 如果新建结点失败，则返回。
     if ((node=create_rbtree_node(key, NULL, NULL, NULL)) == NULL)
         return -1;
-
+    node->value = v;
     rbtree_insert(root, node);
 
     return 0;
@@ -683,3 +686,12 @@ void print_rbtree(RBRoot *root)
 }
 
 
+/*添加一张新的符号表到栈中, 如果添加成功, 返回新的depth, 否则,返回0*/
+int addNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r)
+{
+    if(old_depth + 1 >= MAX_DEPTH) {
+        return 0;
+    }
+    s[old_depth + 1] = r;
+    return old_depth + 1;
+}

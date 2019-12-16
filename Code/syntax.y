@@ -6,9 +6,13 @@
     #include <string.h>  
     #include <assert.h>
     #include "lex.yy.c"
-
+    #include "rbtree.h"
     T* TreeRoot = NULL; 
     
+    RBRoot* SymbolStack[MAX_DEPTH];
+    SymbolStack[0] = create_rbtree();
+    RBRoot* currentSymbolTable = SymbolStack[0];
+    int symbol_stack_depth = 0;
 
     int yyerror(const char* msg);
     int yylex(void);
@@ -63,7 +67,7 @@ VarDefStmt : TYPE VarDecList SEMI   {$$ = initTreeNode(yytname[yyr1[yyn]]); inse
     ;
 
  /*DefDec:定义声明, 表示一个全局变量或者函数的定义/声明, 两个产生式, 前者是全局变量, 后者是函数*/
-DefDec : VarDefStmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
+DefDec : VarDefStmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1); }
     | TYPE FunDec BLOCK     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
     ;
  /*VarDecList: 变量声明串, 由一个或者由逗号分隔开的多个VarDec(变量名)组成*/
@@ -236,7 +240,6 @@ int main(int argc, char** argv)
         return 1;
     }
     yyrestart(f);
-    yydebug = 0;
     yyparse();
     FILE* f1 = fopen("parser.tree", "w");
     printTree(TreeRoot, 0, f1);
