@@ -54,21 +54,21 @@
 
 %%
  /*Program:开始符号, 整个程序*/
-Program : DefDecList  {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1); TreeRoot = $$;}   
+Program : DefList  {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1); TreeRoot = $$;}   
     ;
 
- /*DefDecList: 定义声明串, 由0个或多个DefDec(定义声明)组成*/
-DefDecList :  /*empty*/ {$$ = initTreeNode(yytname[yyr1[yyn]]); }
-    | DefDec DefDecList {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
+ /*DefList: 定义声明串, 由0个或多个DefDec(定义声明)组成*/
+DefList :  /*empty*/ {$$ = initTreeNode(yytname[yyr1[yyn]]); }
+    | VarDefStmt DefList {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
+    | FunDef DefList {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
     ;
 
  /*Def: 变量定义语句, 如int a,b;*/
 VarDefStmt : TYPE VarDecList SEMI   {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
     ;
 
- /*DefDec:定义声明, 表示一个全局变量或者函数的定义/声明, 两个产生式, 前者是全局变量, 后者是函数*/
-DefDec : VarDefStmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1); }
-    | TYPE FunDec BLOCK     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
+ /*FunDef:函数定义*/
+FunDef : TYPE FunDec BLOCK     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
     ;
  /*VarDecList: 变量声明串, 由一个或者由逗号分隔开的多个VarDec(变量名)组成*/
 VarDecList : VarDec     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}

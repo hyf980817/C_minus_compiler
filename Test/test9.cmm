@@ -1,0 +1,20 @@
+/*多作用域*/
+
+int a,b[3],c;
+
+int main()
+{
+    int a[10], b[3];
+
+    float c = 1.3;
+
+    while(c < 100) {
+        int a = 3;
+        while(a[0] < 5) {
+            int a = 4;
+        }
+    }
+
+    b = b*3;
+    return a;
+}

@@ -6,7 +6,7 @@ int main()
 
     while(c < a) {
         c = c+1;
-        d[c] = d[] - 1;
+        d[c] = d[1] - 1;
     }
 
     return d;

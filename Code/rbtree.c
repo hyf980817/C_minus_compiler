@@ -687,11 +687,72 @@ void print_rbtree(RBRoot *root)
 
 
 /*添加一张新的符号表到栈中, 如果添加成功, 返回新的depth, 否则,返回0*/
-int addNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r)
+int pushNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r)
 {
     if(old_depth + 1 >= MAX_DEPTH) {
         return 0;
     }
     s[old_depth + 1] = r;
     return old_depth + 1;
+}
+
+/*扫描整个语法树, 创建符号表*/
+void addSymbolTable(T* root)
+{
+    //首先让root指向第一条语句
+    root = root->child;
+    root = root->child;
+
+    while(root != NULL)
+    {
+        
+        /* 如果是变量定义, 需要考虑一条语句定义多个变量
+        **  VarDefStmt
+        **    TYPE
+        **        TYPE_INT
+        **    VarDecList
+        **        VarDec
+        **            ID
+        **        COMMA
+        **        VarDecList
+        **            VarDec
+        **                ID
+        **            COMMA
+        **            VarDecList
+        **                VarDec
+        **                    ID
+        **    SEMI
+        */
+        if(root->name[0] == 'V')
+        {
+            T* var = root->child;
+            int var_type;
+            switch(var->child->name[5])
+            {
+                case 'I':
+                    var_type = VAR_INT;
+                    break;
+                case 'F':
+                    var_type = VAR_FLOAT;
+                    break;
+                case 'C':
+                    var_type = VAR_CHAR;
+                    break;
+                case 'V':
+                    var_type = VAR_VOID;
+                    break;
+                default:
+                    printf("error in reading type");
+            }
+
+            /*读取完type,开始依次读取var_type*/
+            var = var->r_brother;
+            while(var != NULL)
+            {
+                
+            }
+
+        }
+    }
+
 }

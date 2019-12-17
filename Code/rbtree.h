@@ -53,7 +53,7 @@ int iterative_rbtree_search(RBRoot *root, KeyType key);
 // 打印红黑树
 void print_rbtree(RBRoot *root);
 
-int addNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r);
+int pushNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r);
 
 Node* createSymbol();
 
