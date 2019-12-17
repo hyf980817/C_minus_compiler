@@ -1,6 +1,7 @@
 %locations
 
 %{
+    /*这一部分只能写定义, 不能写陈述语句, 比如a=3这种语句是不允许的*/
     #include <stdio.h>
     #include <stdarg.h> 
     #include <string.h>  
@@ -10,8 +11,7 @@
     T* TreeRoot = NULL; 
     
     RBRoot* SymbolStack[MAX_DEPTH];
-    SymbolStack[0] = create_rbtree();
-    RBRoot* currentSymbolTable = SymbolStack[0];
+    RBRoot* currentSymbolTable;
     int symbol_stack_depth = 0;
 
     int yyerror(const char* msg);
@@ -230,7 +230,8 @@ int main(int argc, char** argv)
 {
     //freopen("out.txt", "w",stdout);
     //freopen("err.txt", "w",stderr);
-    
+    SymbolStack[0] = create_rbtree();
+    currentSymbolTable = SymbolStack[0];
     if(argc <= 1) 
         return 1;
     FILE* f = fopen(argv[1], "r");

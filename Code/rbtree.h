@@ -7,7 +7,7 @@
 
 
 #include "symbol.h"
-
+#include <string.h>
 typedef char* KeyType;
 
 // 红黑树的节点
@@ -55,6 +55,6 @@ void print_rbtree(RBRoot *root);
 
 int addNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r);
 
-Node* createSymbol()
+Node* createSymbol();
 
 #endif
