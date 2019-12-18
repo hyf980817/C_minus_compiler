@@ -12,8 +12,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "rbtree.h"
-
+#include "Tree.h"
+#include <assert.h>
+#include <stdarg.h>
 #define rb_parent(r)   ((r)->parent)
 #define rb_color(r) ((r)->color)
 #define rb_is_red(r)   ((r)->color==RED)
@@ -400,12 +401,9 @@ static Node* create_rbtree_node(KeyType key, Node *parent, Node *left, Node* rig
  *     0，插入成功
  *     -1，插入失败
  */
-int insert_rbtree(RBRoot *root, KeyType key, int symbol_type, T* syntaxTree_nodev)
+int insert_rbtree(RBRoot *root, KeyType key, symbol s)
 {
     Node *node;    // 新建结点
-    symbol v;
-    v.type = symbol_type;
-    v.syntaxTreeNode = syntaxTree_nodev;
 
     // 不允许插入相同键值的节点。
     // (若想允许插入相同键值的节点，注释掉下面两句话即可！)
@@ -415,7 +413,7 @@ int insert_rbtree(RBRoot *root, KeyType key, int symbol_type, T* syntaxTree_node
     // 如果新建结点失败，则返回。
     if ((node=create_rbtree_node(key, NULL, NULL, NULL)) == NULL)
         return -1;
-    node->value = v;
+    node->value = s;
     rbtree_insert(root, node);
 
     return 0;
@@ -696,38 +694,141 @@ int pushNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r)
     return old_depth + 1;
 }
 
+
+//创建一个symbol, 用于插入符号表
+symbol createSymbol(int id_type, int var_type, T* syntaxTreeNode)
+{
+    symbol s;
+    s.id_type = id_type;
+    s.var_type = var_type;
+    s.array[0] = 0;
+
+    return s;
+}
+
+
+/*读取一行变量定义语句, Var最初指向VarDefList*/
+/* 如果是变量定义, 需要考虑一条语句定义多个变量
+**  VarDefStmt
+**    TYPE
+**        TYPE_INT
+**    VarDecList
+**        VarDec
+**            ID
+**        COMMA
+**        VarDecList
+**            VarDec
+**                ID
+**            COMMA
+**            VarDecList
+**                VarDec
+**                    ID
+**    SEMI
+*/
+void readVarDefStmt(T* var, RBRoot* table)
+{
+    var = var->child;
+    int var_type;
+    switch(var->child->name[5])
+    {
+        case 'I':
+            var_type = VAR_INT;
+            break;
+        case 'F':
+            var_type = VAR_FLOAT;
+            break;
+        case 'C':
+            var_type = VAR_CHAR;
+            break;
+        case 'V':
+            var_type = VAR_VOID;
+            break;
+        default:
+            printf("error in reading type");
+    }
+
+    /*读取完type,开始依次读取var_type*/
+    var = var->r_brother; //现在var指向VarDecList
+    assert(strcmp(var->name, "VarDecList") == 0);
+    while(var != NULL)
+    {
+        
+        var = var->child;
+        assert(strcmp(var->name, "VarDec") == 0);
+        T* id = var->child;
+        if(search(table, id->name) != NULL)
+            printf("Same id!!!");
+        symbol s = createSymbol(VAR, var_type, var);
+        
+        if(id->r_brother == NULL) //纯一个id,不是数组, 没有赋值
+        {
+            ;//目前直接插入即可
+        }
+        else if(id->r_brother->name[0] == 'L') //左中括号, 一个数组
+        {
+            
+            int i = 1;
+            T* arr_num = id->r_brother->r_brother;
+            while(arr_num != NULL)
+            {
+                s.array[i] = arr_num->type_int;
+                i++;
+                arr_num = arr_num->r_brother->r_brother;
+            }
+        }
+        else //赋值定义,如a=3语句
+        {
+            ;//目前直接插入即可
+        }
+        insert_rbtree(table, id->name, s);
+
+        var = var->r_brother;
+        if(var != NULL)
+            var = var->r_brother;
+    }
+}
+
+void readBLOCK(T* block, RBRoot* tables[], int depth)
+{
+
+}
+
 /*扫描整个语法树, 创建符号表*/
 void addSymbolTable(T* root)
 {
     //首先让root指向第一条语句
     root = root->child;
     root = root->child;
+    RBRoot* tables[MAX_DEPTH];
+    tables[0] = create_rbtree();
+    RBRoot* currentTable = tables[0];
+    int stack_depth = 0;
 
+    //最初root指向DefList第一个child
     while(root != NULL)
     {
         
-        /* 如果是变量定义, 需要考虑一条语句定义多个变量
-        **  VarDefStmt
-        **    TYPE
-        **        TYPE_INT
-        **    VarDecList
-        **        VarDec
-        **            ID
-        **        COMMA
-        **        VarDecList
-        **            VarDec
-        **                ID
-        **            COMMA
-        **            VarDecList
-        **                VarDec
-        **                    ID
-        **    SEMI
-        */
         if(root->name[0] == 'V')
         {
-            T* var = root->child;
+            readVarDefStmt(root, currentTable);
+        }
+
+        else //函数
+        {
+        /*    
+        **    FunDef
+        **        TYPE
+        **            TYPE_INT
+        **        FunDec
+        **            ID
+        **            LP
+        **            RP
+        **        BLOCK
+        */    
+            assert(root->name[0] == 'F');
+            T* id_type = root->child;
             int var_type;
-            switch(var->child->name[5])
+            switch(id_type->child->name[5])
             {
                 case 'I':
                     var_type = VAR_INT;
@@ -742,17 +843,75 @@ void addSymbolTable(T* root)
                     var_type = VAR_VOID;
                     break;
                 default:
-                    printf("error in reading type");
+                    printf("error in reading function type");
             }
 
-            /*读取完type,开始依次读取var_type*/
-            var = var->r_brother;
-            while(var != NULL)
+            T* FunDec = id_type->r_brother;
+            assert(strcmp(FunDec->name, "FunDec") == 0);
+
+            //检测这个函数的id是否已经存在, 如果没有存在过, 创建新的符号表
+            T* id = FunDec->child;
+            if(search(tables[0], id->name) != NULL)
+                printf("Same id!!!");
+            
+            symbol func_symbol = createSymbol(FUNC, var_type, id);
+            
+
+            RBRoot* func_table = create_rbtree();
+            stack_depth++;
+            if(stack_depth >= MAX_DEPTH)
+                printf("Too many symbol tables!!");
+            tables[stack_depth] = func_table;
+            currentTable = func_table;
+
+            //接下来读取函数参数
+            T* paralist = id->r_brother->r_brother;
+            if(strcmp(paralist->name, "ParaList") == 0)
             {
-                
+                while(paralist != NULL)
+                {
+                    paralist = paralist->child;
+                    T* para_type = paralist->child;
+                    int var_type;
+                    switch(para_type->child->name[5])
+                    {
+                        case 'I':
+                            var_type = VAR_INT;
+                            break;
+                        case 'F':
+                            var_type = VAR_FLOAT;
+                            break;
+                        case 'C':
+                            var_type = VAR_CHAR;
+                            break;
+                        case 'V':
+                            var_type = VAR_VOID;
+                            break;
+                        default:
+                            printf("error in reading type");
+                    }
+
+                    T* para_id = para_type->r_brother->child;
+                    symbol s = createSymbol(VAR, var_type, para_type->r_brother);
+                    insert_rbtree(currentTable, para_id->name, s);
+
+                    paralist = paralist->r_brother;
+                    if(paralist != NULL)
+                        paralist = paralist->r_brother;
+                }
             }
+
+            //接下来读取block里的变量
+            readBLOCK(FunDec->r_brother, tables, stack_depth);
+
+            //读取完后, 将这个table附到语法树上, 退栈
 
         }
+
+        root = root->r_brother;
+        if(root != NULL)
+            root = root->child;
+        
     }
 
 }

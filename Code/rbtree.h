@@ -3,7 +3,7 @@
 
 #define RED        0    // 红色节点
 #define BLACK    1    // 黑色节点
-#define MAX_DEPTH   10  //符号表栈的最大深度
+
 
 
 #include "symbol.h"
@@ -32,7 +32,7 @@ RBRoot* create_rbtree();
 void destroy_rbtree(RBRoot *root);
 
 // 将结点插入到红黑树中。插入成功，返回0；失败返回-1。
-int insert_rbtree(RBRoot *root, KeyType key, int symbol_type, T* syntaxTree_node);
+int insert_rbtree(RBRoot *root, KeyType key, symbol s);
 
 // 删除结点(key为节点的值)
 void delete_rbtree(RBRoot *root, KeyType key);
@@ -55,6 +55,6 @@ void print_rbtree(RBRoot *root);
 
 int pushNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r);
 
-Node* createSymbol();
+
 
 #endif

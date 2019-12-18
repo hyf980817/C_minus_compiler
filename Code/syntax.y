@@ -7,12 +7,8 @@
     #include <string.h>  
     #include <assert.h>
     #include "lex.yy.c"
-    #include "rbtree.h"
     T* TreeRoot = NULL; 
     
-    RBRoot* SymbolStack[MAX_DEPTH];
-    RBRoot* currentSymbolTable;
-    int symbol_stack_depth = 0;
 
     int yyerror(const char* msg);
     int yylex(void);
@@ -82,7 +78,7 @@ TYPE : TYPE_INT      {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, 
  /*VarDec: 对一个变量的定义,标识符或者数组, 如int a中的a, int a[3]中的a[3]*/
 VarDec : ID     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}        
     | ID OP_ASSIGN Expr     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
-    | VarDec LB INT RB     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 4, $1, $2, $3, $4);}
+    | ID LB INT RB     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 4, $1, $2, $3, $4);}
     ;
 
  /*FunDec:函数声明, fun(), fun(int a, int b).*/
@@ -171,7 +167,7 @@ T* initTreeNode(const char* const name)
     result->l_brother = NULL;
     result->r_brother = NULL;
     result->name = strdup(name);
-
+    result->table = NULL;
     return result;
 }
 
@@ -230,8 +226,7 @@ int main(int argc, char** argv)
 {
     //freopen("out.txt", "w",stdout);
     //freopen("err.txt", "w",stderr);
-    SymbolStack[0] = create_rbtree();
-    currentSymbolTable = SymbolStack[0];
+
     if(argc <= 1) 
         return 1;
     FILE* f = fopen(argv[1], "r");

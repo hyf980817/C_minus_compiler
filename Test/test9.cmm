@@ -1,6 +1,6 @@
 /*多作用域*/
 
-int a,b[3],c;
+int a[2],b[3],c=4,d;
 
 int main()
 {
@@ -17,4 +17,10 @@ int main()
 
     b = b*3;
     return a;
+}
+
+
+int sub(int a, float b)
+{
+    return a+b;
 }
