@@ -26,6 +26,7 @@ typedef struct{
         int return_type;
     };
     int array[MAX_DEPTH]; /*数组类型, 第一个元素存储维度, 如果不是数组, 第一个元素为0,后面的元素是各个维度的长度, 至多支持4维*/
+    void *syntaxTreeNode; //这个用于指向语法树中对应的节点, 无论是函数还是变量永远指向id
 }symbol;
 
 

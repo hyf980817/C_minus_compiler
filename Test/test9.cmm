@@ -13,6 +13,9 @@ int main()
         while(a[0] < 5) {
             int a = 4;
         }
+        while(a[0] > 5) {
+            int a = 4;
+        }
     }
 
     b = b*3;

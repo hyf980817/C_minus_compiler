@@ -23,7 +23,8 @@
 #define rb_set_red(r)  do { (r)->color = RED; } while (0)
 #define rb_set_parent(r,p)  do { (r)->parent = (p); } while (0)
 #define rb_set_color(r,c)  do { (r)->color = (c); } while (0)
-
+void readStmt(T* stmt, RBRoot* tables[], int stack_depth);
+int readBLOCK(T* block, RBRoot* tables[], int stack_depth);
 
 
 
@@ -702,34 +703,15 @@ symbol createSymbol(int id_type, int var_type, T* syntaxTreeNode)
     s.id_type = id_type;
     s.var_type = var_type;
     s.array[0] = 0;
-
+    s.syntaxTreeNode = NULL;
     return s;
 }
 
-
-/*读取一行变量定义语句, Var最初指向VarDefList*/
-/* 如果是变量定义, 需要考虑一条语句定义多个变量
-**  VarDefStmt
-**    TYPE
-**        TYPE_INT
-**    VarDecList
-**        VarDec
-**            ID
-**        COMMA
-**        VarDecList
-**            VarDec
-**                ID
-**            COMMA
-**            VarDecList
-**                VarDec
-**                    ID
-**    SEMI
-*/
-void readVarDefStmt(T* var, RBRoot* table)
+/*读取一个变量的类型/函数的返回类型, type最初指向TYPE*/
+int readVarType(T* type)
 {
-    var = var->child;
     int var_type;
-    switch(var->child->name[5])
+    switch(type->child->name[5])
     {
         case 'I':
             var_type = VAR_INT;
@@ -744,8 +726,36 @@ void readVarDefStmt(T* var, RBRoot* table)
             var_type = VAR_VOID;
             break;
         default:
-            printf("error in reading type");
+            var_type = -1;
     }
+
+    return var_type;
+}
+
+
+
+/*读取一行变量定义语句, Var最初指向VarDefStmt*/
+/* 如果是变量定义, 需要考虑一条语句定义多个变量
+ *  VarDefStmt
+ *    TYPE
+ *        TYPE_INT
+ *    VarDecList
+ *        VarDec
+ *            ID
+ *        COMMA
+ *        VarDecList
+ *            VarDec
+ *                ID
+ *            COMMA
+ *            VarDecList
+ *                VarDec
+ *                    ID
+ *    SEMI
+ */
+void readVarDefStmt(T* var, RBRoot* table)
+{
+    var = var->child;
+    int var_type = readVarType(var);
 
     /*读取完type,开始依次读取var_type*/
     var = var->r_brother; //现在var指向VarDecList
@@ -756,15 +766,15 @@ void readVarDefStmt(T* var, RBRoot* table)
         var = var->child;
         assert(strcmp(var->name, "VarDec") == 0);
         T* id = var->child;
-        if(search(table, id->name) != NULL)
+        if(search(table->node, id->name) != NULL)
             printf("Same id!!!");
         symbol s = createSymbol(VAR, var_type, var);
-        
+        s.syntaxTreeNode = (void *)id;
         if(id->r_brother == NULL) //纯一个id,不是数组, 没有赋值
         {
             ;//目前直接插入即可
         }
-        else if(id->r_brother->name[0] == 'L') //左中括号, 一个数组
+        else if(id->r_brother->name[0] == 'L') //左中括号, 数组, 注意考虑多维数组的情况
         {
             
             int i = 1;
@@ -788,9 +798,90 @@ void readVarDefStmt(T* var, RBRoot* table)
     }
 }
 
-void readBLOCK(T* block, RBRoot* tables[], int depth)
-{
 
+
+/*读取一个stmt中的block, 读取新block前需要创建新的符号表*/
+void readStmt(T* stmt, RBRoot* tables[], int stack_depth)
+{
+    //找子block, 可以产生子block的Stmt产生式:
+    // Stmt: BLOCK
+    // Stmt: WHILE...
+    // Stmt: FOR ...
+    // Stmt IF...
+    assert(stmt!= NULL && stmt->child !=NULL);
+    T* token = stmt->child;
+
+    if(strcmp(token->name, "BLOCK") == 0)
+    {
+        RBRoot* new_table = create_rbtree();
+        stack_depth = pushNewSymbolTable(tables, stack_depth, new_table);
+        stack_depth = readBLOCK(token, tables, stack_depth);
+        
+    }
+    else
+    {
+        switch(token->name[0])
+        {
+            case 'B':break;
+            case 'C':break;
+            case 'R':break;
+            case 'E':break;
+            case 'I': //IF, 含有Stmt
+                token = token->r_brother->r_brother->r_brother->r_brother;
+                assert(token->name[0] == 'S');
+                readStmt(token, tables, stack_depth);
+                if(token->r_brother != NULL)
+                    readStmt(token->r_brother->r_brother, tables, stack_depth);
+                break;
+            case 'W':
+                token = token->r_brother->r_brother->r_brother->r_brother;
+                assert(token->name[0] == 'S');
+                readStmt(token, tables, stack_depth);
+                break;
+            case 'F':
+                token = token->r_brother->r_brother->r_brother->r_brother;
+                token = token->r_brother->r_brother->r_brother->r_brother;
+                assert(token->name[0] == 'S');
+                readStmt(token, tables, stack_depth);
+                break;
+        }
+    }
+   
+}
+
+
+/*读取一个BLOCK中的变量定义语句, 假定该block的符号表已经创建好, 位于tables[depth]*/
+int readBLOCK(T* block, RBRoot* tables[], int depth)
+{
+    RBRoot* currentTable = tables[depth];
+    //readBLOCK, 由于我们对BLOCK的定义,所有定义都在BLOCK开头的VarDefStmtList中, 所以首先需要读取最开始的语句
+    T* varDefStmt = block->child->r_brother->child;
+    while(varDefStmt != NULL)
+    {
+        readVarDefStmt(varDefStmt, currentTable);
+        varDefStmt = varDefStmt->r_brother->child;
+    }
+
+    //剩下还有子block里的语句
+    //子block位于SentenceList中的Sentence的Stmt中
+    T* sentenceList = block->child->r_brother->r_brother;
+    T* sentence = sentenceList->child;
+    while(sentence != NULL)
+    {
+        T* stmt = sentence->child;
+        if(stmt != NULL && stmt->child != NULL)
+        {
+           readStmt(stmt, tables, depth);
+        }
+        sentence = sentence->r_brother;
+        if(sentence != NULL)
+            sentence = sentence->child;
+    }
+
+    //最后将这个语法表附着到这个block上
+    block->table = currentTable;
+    depth--;
+    return depth; 
 }
 
 /*扫描整个语法树, 创建符号表*/
@@ -827,35 +918,19 @@ void addSymbolTable(T* root)
         */    
             assert(root->name[0] == 'F');
             T* id_type = root->child;
-            int var_type;
-            switch(id_type->child->name[5])
-            {
-                case 'I':
-                    var_type = VAR_INT;
-                    break;
-                case 'F':
-                    var_type = VAR_FLOAT;
-                    break;
-                case 'C':
-                    var_type = VAR_CHAR;
-                    break;
-                case 'V':
-                    var_type = VAR_VOID;
-                    break;
-                default:
-                    printf("error in reading function type");
-            }
+            int var_type = readVarType(id_type);
+           
 
             T* FunDec = id_type->r_brother;
             assert(strcmp(FunDec->name, "FunDec") == 0);
 
-            //检测这个函数的id是否已经存在, 如果没有存在过, 创建新的符号表
+            //检测这个函数的id是否已经存在, 如果不存在, 创建新的符号表
             T* id = FunDec->child;
-            if(search(tables[0], id->name) != NULL)
+            if(search(tables[0]->node, id->name) != NULL)
                 printf("Same id!!!");
             
             symbol func_symbol = createSymbol(FUNC, var_type, id);
-            
+            func_symbol.syntaxTreeNode = (void *)id;
 
             RBRoot* func_table = create_rbtree();
             stack_depth++;
@@ -872,24 +947,8 @@ void addSymbolTable(T* root)
                 {
                     paralist = paralist->child;
                     T* para_type = paralist->child;
-                    int var_type;
-                    switch(para_type->child->name[5])
-                    {
-                        case 'I':
-                            var_type = VAR_INT;
-                            break;
-                        case 'F':
-                            var_type = VAR_FLOAT;
-                            break;
-                        case 'C':
-                            var_type = VAR_CHAR;
-                            break;
-                        case 'V':
-                            var_type = VAR_VOID;
-                            break;
-                        default:
-                            printf("error in reading type");
-                    }
+                    int var_type = readVarType(para_type);
+                    
 
                     T* para_id = para_type->r_brother->child;
                     symbol s = createSymbol(VAR, var_type, para_type->r_brother);
@@ -902,9 +961,9 @@ void addSymbolTable(T* root)
             }
 
             //接下来读取block里的变量
-            readBLOCK(FunDec->r_brother, tables, stack_depth);
+            T* fun_block = FunDec->r_brother;
+            readBLOCK(fun_block, tables, stack_depth);
 
-            //读取完后, 将这个table附到语法树上, 退栈
 
         }
 

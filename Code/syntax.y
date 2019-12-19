@@ -59,13 +59,19 @@ DefList :  /*empty*/ {$$ = initTreeNode(yytname[yyr1[yyn]]); }
     | FunDef DefList {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
     ;
 
+
+
  /*Def: 变量定义语句, 如int a,b;*/
 VarDefStmt : TYPE VarDecList SEMI   {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
+    | error SEMI {$$ = initTreeNode(yytname[yyr1[yyn]]);}
+    | error {$$ = initTreeNode(yytname[yyr1[yyn]]);}
     ;
 
  /*FunDef:函数定义*/
 FunDef : TYPE FunDec BLOCK     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
     ;
+
+
  /*VarDecList: 变量声明串, 由一个或者由逗号分隔开的多个VarDec(变量名)组成*/
 VarDecList : VarDec     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
     | VarDec COMMA VarDecList     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
@@ -95,16 +101,22 @@ ParaDec : TYPE VarDec      {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($
     ;
 
  /*Block : 由花括号括起来的一堆语句*/
-BLOCK : LC SentenceList RC     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
+BLOCK : LC VarDefStmtList SentenceList RC     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 4, $1, $2, $3, $4);}
     ;
+
+ /*一串定义变量的语句*/
+VarDefStmtList : /*empty*/ {$$ = initTreeNode(yytname[yyr1[yyn]]); }
+    | VarDefStmt VarDefStmtList {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
+
 
  /* StmtList: 语句串*/
 SentenceList : Sentence SentenceList     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
     | /*empty*/{$$ = initTreeNode(yytname[yyr1[yyn]]); }
     ;
+
+
  /*Stmt: 语句, 分为定义语句和陈述语句*/
-Sentence : VarDefStmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
-    | Stmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
+Sentence : Stmt     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
     | error SEMI {$$ = initTreeNode(yytname[yyr1[yyn]]);}
     | error {$$ = initTreeNode(yytname[yyr1[yyn]]);}
     ;
@@ -122,6 +134,8 @@ Stmt : Expr SEMI     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, 
     | CONTINUE SEMI     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 2, $1, $2);}
     ;
 
+
+ /*表达式*/
 Expr : Expr OP_ASSIGN Expr     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
     | Expr OP_BIT_OR Expr     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
     | Expr OP_BIT_XOR Expr     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
@@ -149,9 +163,13 @@ Expr : Expr OP_ASSIGN Expr     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChi
     | Expr LB Expr RB     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 4, $1, $2, $3, $4);}
     ;
 
+
+
 Args : Expr COMMA Args     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 3, $1, $2, $3);}
     | Expr     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($$, 1, $1);}
     ;
+
+
 %%
 int yyerror(const char* msg)
 {
@@ -235,6 +253,7 @@ int main(int argc, char** argv)
         perror(argv[1]);
         return 1;
     }
+    //yydebug = 1;
     yyrestart(f);
     yyparse();
     FILE* f1 = fopen("parser.tree", "w");
