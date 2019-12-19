@@ -245,9 +245,9 @@ int main(int argc, char** argv)
     //freopen("out.txt", "w",stdout);
     //freopen("err.txt", "w",stderr);
 
-    if(argc <= 1) 
-        return 1;
-    FILE* f = fopen(argv[1], "r");
+    //if(argc <= 1) 
+    //    return 1;
+    FILE* f = fopen("../Test/test1.cmm", "r");
     if(!f)
     {
         perror(argv[1]);
@@ -258,6 +258,7 @@ int main(int argc, char** argv)
     yyparse();
     FILE* f1 = fopen("parser.tree", "w");
     printTree(TreeRoot, 0, f1);
-
+    //addSymbolTable(TreeRoot);
+    //print_rbtree(TreeRoot->table);
     return 0;
 }

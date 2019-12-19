@@ -887,18 +887,19 @@ int readBLOCK(T* block, RBRoot* tables[], int depth)
 /*扫描整个语法树, 创建符号表*/
 void addSymbolTable(T* root)
 {
-    //首先让root指向第一条语句
-    root = root->child;
-    root = root->child;
+    assert(root !=NULL);
     RBRoot* tables[MAX_DEPTH];
     tables[0] = create_rbtree();
     RBRoot* currentTable = tables[0];
     int stack_depth = 0;
 
-    //最初root指向DefList第一个child
+    root->table = currentTable;
     while(root != NULL)
     {
-        
+            //首先让root指向第一条语句
+        root = root->child;
+        root = root->child;
+        assert(root !=NULL);
         if(root->name[0] == 'V')
         {
             readVarDefStmt(root, currentTable);

@@ -97,4 +97,7 @@ typedef struct T {
 T* initTreeNode(const char* const name);
 void insertChild(T* root, int n , ...);
 void insertBrotherToRight(T* root, T* newnode);
+
+void addSymbolTable(T* root);
+
 #endif
