@@ -943,13 +943,12 @@ void addSymbolTable(T* root)
             
             symbol func_symbol = createSymbol(FUNC, var_type, id);
             func_symbol.syntaxTreeNode = (void *)id;
-
+            insert_rbtree(currentTable, id->id, func_symbol);
             RBRoot* func_table = create_rbtree();
             stack_depth++;
             if(stack_depth >= MAX_DEPTH)
                 printf("Too many symbol tables!!");
             tables[stack_depth] = func_table;
-            currentTable = func_table;
 
             //接下来读取函数参数
             T* paralist = id->r_brother->r_brother;
@@ -964,7 +963,7 @@ void addSymbolTable(T* root)
 
                     T* para_id = para_type->r_brother->child;
                     symbol s = createSymbol(VAR, var_type, para_type->r_brother);
-                    insert_rbtree(currentTable, para_id->id, s);
+                    insert_rbtree(tables[stack_depth], para_id->id, s);
 
                     paralist = paralist->r_brother;
                     if(paralist != NULL)

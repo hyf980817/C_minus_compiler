@@ -9,7 +9,7 @@
     #include "lex.yy.c"
     T* TreeRoot = NULL; 
     
-
+    int ERROR = 0;
     int yyerror(const char* msg);
     int yylex(void);
 %}
@@ -174,6 +174,7 @@ Args : Expr COMMA Args     {$$ = initTreeNode(yytname[yyr1[yyn]]); insertChild($
 int yyerror(const char* msg)
 {
     fprintf(stderr, "Error at line %d: %s\n", yylineno, msg);
+    ERROR = 1;
     return 0;
 }
 
@@ -233,6 +234,13 @@ void printTree(T* root, int level, FILE *f)
         fprintf(f,"%s(%s)\n", root->name, root->id);
     else
         fprintf(f,"%s\n", root->name);
+
+    if(strcmp(root->name, "Program") == 0 || strcmp(root->name, "BLOCK") == 0)
+    {
+        printf("\n%s SymbolTable:\n", root->name);
+        print_rbtree(root->table);
+        printf("\nend of SymbolTable:\n");
+    }
     T* child = root->child;
     while(child != NULL)
     {
@@ -247,10 +255,10 @@ int main(int argc, char** argv)
 {
     //freopen("out.txt", "w",stdout);
     //freopen("err.txt", "w",stderr);
-
-    //if(argc <= 1) 
-    //    return 1;
-    FILE* f = fopen("../Test/test1.cmm", "r");
+    FILE* f = NULL;
+    if(argc <= 1) 
+        f = fopen("../Test/test1.cmm", "r");
+    f = fopen(argv[1], "r");
     if(!f)
     {
         perror(argv[1]);
@@ -260,8 +268,11 @@ int main(int argc, char** argv)
     yyrestart(f);
     yyparse();
     FILE* f1 = fopen("parser.tree", "w");
-    printTree(TreeRoot, 0, f1);
-    addSymbolTable(TreeRoot);
-    //print_rbtree(TreeRoot->table);
+    if(!ERROR)
+    {
+        addSymbolTable(TreeRoot);
+        printTree(TreeRoot, 0, f1);
+    }
+
     return 0;
 }
