@@ -103,7 +103,7 @@ void postorder_rbtree(RBRoot *root)
  */
 static Node* search(RBTree x, KeyType key)
 {
-    if (x==NULL || x->key==key)
+    //if (x==NULL || x->key==key)
     if (x==NULL || strcmp(x->key, key) == 0)
         return x;
 
@@ -766,8 +766,8 @@ void readVarDefStmt(T* var, RBRoot* table)
         var = var->child;
         assert(strcmp(var->name, "VarDec") == 0);
         T* id = var->child;
-        if(search(table->node, id->name) != NULL)
-            printf("Same id!!!");
+        if(search(table->node, id->id) != NULL)
+            fprintf(stderr, "Same variable definition :%s", id->id);
         symbol s = createSymbol(VAR, var_type, var);
         s.syntaxTreeNode = (void *)id;
         if(id->r_brother == NULL) //纯一个id,不是数组, 没有赋值
@@ -938,8 +938,8 @@ void addSymbolTable(T* root)
 
             //检测这个函数的id是否已经存在, 如果不存在, 创建新的符号表
             T* id = FunDec->child;
-            if(search(tables[0]->node, id->name) != NULL)
-                printf("Same id!!!");
+            if(search(tables[0]->node, id->id) != NULL)
+                printf("Same function defition: %s", id->id);
             
             symbol func_symbol = createSymbol(FUNC, var_type, id);
             func_symbol.syntaxTreeNode = (void *)id;

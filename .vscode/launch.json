@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "/home/hyf/compilers/C_minus_compiler/Code/parser",
-            "args": ["../Test/test5.cmm"],
+            "args": ["../Test/test9.cmm"],
             "stopAtEntry": true,
             "cwd": "/home/hyf/compilers/C_minus_compiler/Code",
             "environment": [],

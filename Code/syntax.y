@@ -198,14 +198,14 @@ void insertChild(T* root, int n, ...)
 
     va_start(ap, n);
     
-    T* child = va_arg(ap, struct T*);
+    T* child = va_arg(ap, T*);
     assert(root->child == NULL);
     root->child = child;
   
     //fprintf(stdout, "insert %s in %s as 0 child\n", child->name, root->name);
     for(i = 1; i < n; i++)
     {
-        child = va_arg(ap, struct T*);
+        child = va_arg(ap, T*);
         insertBrotherToRight(root->child, child);
         //fprintf(stdout, "insert %s in %s as %d child\n", child->name, root->name, i);
     }
