@@ -88,6 +88,7 @@ typedef struct T {
         char* type_str;
     };
     char *name;
+    char *id;
     RBRoot *table;
     struct T* child;
     struct T* l_brother;

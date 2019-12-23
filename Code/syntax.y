@@ -229,7 +229,10 @@ void printTree(T* root, int level, FILE *f)
 {
     for(int i = 0; i < level; i++)
         fprintf(f,"    ");
-    fprintf(f,"%s\n", root->name);
+    if(strcmp(root->name, "ID") == 0)
+        fprintf(f,"%s(%s)\n", root->name, root->id);
+    else
+        fprintf(f,"%s\n", root->name);
     T* child = root->child;
     while(child != NULL)
     {
@@ -258,7 +261,7 @@ int main(int argc, char** argv)
     yyparse();
     FILE* f1 = fopen("parser.tree", "w");
     printTree(TreeRoot, 0, f1);
-    //addSymbolTable(TreeRoot);
+    addSymbolTable(TreeRoot);
     //print_rbtree(TreeRoot->table);
     return 0;
 }

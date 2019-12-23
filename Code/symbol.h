@@ -1,8 +1,6 @@
 #ifndef _SYMBOL_
 #define _SYMBOL_
 #include "Tree.h"
-#define FUNC 0
-#define VAR 1
 #define MAX_DEPTH 10
 #define VAR_INT 255
 #define VAR_FLOAT 256

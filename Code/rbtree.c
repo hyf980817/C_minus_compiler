@@ -790,7 +790,7 @@ void readVarDefStmt(T* var, RBRoot* table)
         {
             ;//目前直接插入即可
         }
-        insert_rbtree(table, id->name, s);
+        insert_rbtree(table, id->id, s);
 
         var = var->r_brother;
         if(var != NULL)
@@ -894,12 +894,24 @@ void addSymbolTable(T* root)
     int stack_depth = 0;
 
     root->table = currentTable;
+    
+    //首先让root指向第一条语句
+    if(root != NULL)
+        root = root->child;
+    else
+    {
+        assert(0);
+    }
+    
+    if(root != NULL)
+        root = root->child;
+    else
+    {
+        assert(0);
+    }
     while(root != NULL)
     {
-            //首先让root指向第一条语句
-        root = root->child;
-        root = root->child;
-        assert(root !=NULL);
+
         if(root->name[0] == 'V')
         {
             readVarDefStmt(root, currentTable);
@@ -917,13 +929,12 @@ void addSymbolTable(T* root)
         **            RP
         **        BLOCK
         */    
-            assert(root->name[0] == 'F');
+            assert(strcmp(root->name, "FunDef") == 0);
             T* id_type = root->child;
             int var_type = readVarType(id_type);
            
 
             T* FunDec = id_type->r_brother;
-            assert(strcmp(FunDec->name, "FunDec") == 0);
 
             //检测这个函数的id是否已经存在, 如果不存在, 创建新的符号表
             T* id = FunDec->child;
@@ -953,7 +964,7 @@ void addSymbolTable(T* root)
 
                     T* para_id = para_type->r_brother->child;
                     symbol s = createSymbol(VAR, var_type, para_type->r_brother);
-                    insert_rbtree(currentTable, para_id->name, s);
+                    insert_rbtree(currentTable, para_id->id, s);
 
                     paralist = paralist->r_brother;
                     if(paralist != NULL)

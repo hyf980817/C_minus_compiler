@@ -44,7 +44,7 @@ break           {yylval = initTreeNode("BREAK"); return BREAK;}
 continue        {yylval = initTreeNode("CONTINUE"); return CONTINUE;}
 
     /*标识符*/
-{letter}({digit}|{letter})*     {yylval = initTreeNode("ID"); return ID;}
+{letter}({digit}|{letter})*     {yylval = initTreeNode("ID"); yylval->id = strdup(yytext); return ID;}
 
     /*整型*/
 {non_zero}{digits}|{digit}  {yylval = initTreeNode("INT"); return INT;}
