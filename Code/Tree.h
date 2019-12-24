@@ -87,7 +87,7 @@ typedef struct T {
         char type_char;
         char* type_str;
     };
-    char *name;
+    char *name;  
     char *id;
     RBRoot *table;
     struct T* child;
