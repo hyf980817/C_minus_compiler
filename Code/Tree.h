@@ -82,10 +82,10 @@ int pushNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r);
 /**************************************语法树的定义**************************************/
 typedef struct T {
     union {
-        int type_int;
-        float type_flat;
-        char type_char;
-        char* type_str;
+        int int_val;
+        float float_val;
+        char char_val;
+        char* str_val;
     };
     char *name;  
     char *id;

@@ -36,6 +36,9 @@ syntax-c: $(YFILE)
 syntax-c-debug: $(YFILE)
 	$(BISON) -o $(YFC) -d -v -t $(YFILE)
 
+
+intercodeTest: 
+	$(CC) -o intercode_test InterCode.c InterCode_test.c
 -include $(patsubst %.o, %.d, $(OBJS))
 
 # 定义的一些伪目标
@@ -43,7 +46,7 @@ syntax-c-debug: $(YFILE)
 test:
 	./parser ../Test/test1.cmm
 clean:
-	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output parser.tree
+	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output parser.tree intercode_test
 	rm -f $(OBJS) $(OBJS:.o=.d)
 	rm -f $(LFC) $(YFC) $(YFC:.c=.h)
 	rm -f *~
