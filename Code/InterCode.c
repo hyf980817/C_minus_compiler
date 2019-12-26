@@ -29,16 +29,19 @@ Operand createOperand_INT(int type, int val, char *name)
 
 
 
-
+//创建赋值表达式的中间语句
 InterCode createInterCode_ASSIGN(Operand src, Operand dst)
 {
     InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
     code->assign.left = dst;
     code->assign.right = src;
     code->kind = I_ASSIGN;
+    code->next = NULL;
     return code;
 }
 
+
+//创建二元操作数的表达式中间语句
 InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int type)
 {
     InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
@@ -47,20 +50,22 @@ InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int typ
     code->binop.op1 = src1;
     code->binop.op2 = src2;
     code->binop.result = dst;
-
+    code->next = NULL;
     return code;
 }
 
+//创建一元的表达式的中间语句
 InterCode createInterCode_UNARY(Operand op, int type)
 {
     InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
     assert(type <= I_PARAM && type >= I_LABEL);
     code->kind = type;
     code->unary.op = op;
-
+    code->next = NULL;
     return code; 
 }
 
+//打印一个操作数
 void printOperand(Operand op)
 {
     switch (op->kind)
@@ -79,6 +84,7 @@ void printOperand(Operand op)
     }
 }
 
+//打印一条中间代码
 void printInterCode(InterCode code)
 {
     switch (code->kind)
@@ -103,4 +109,35 @@ void printInterCode(InterCode code)
     default:
         break;
     }
+}
+
+
+//初始化中间代码段
+InterCodes initNewInterCodes()
+{
+    InterCodes codes;
+    codes.code_seg = NULL;
+    codes.next = NULL;
+    codes.pre = NULL;
+
+    return codes;
+}
+
+//向中间代码段中添加一条中间代码
+void addInterCode(InterCodes codes, InterCode code)
+{   
+    InterCode end = codes.code_seg;
+
+    if(end == NULL)
+    {
+        codes.code_seg = code;
+        return;
+    }
+
+    while(end->next != NULL)
+    {
+        end = end->next;
+    }
+
+    end->next = code;
 }

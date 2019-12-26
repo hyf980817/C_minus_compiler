@@ -23,13 +23,14 @@ struct InterCode_
         struct {Operand result, op1, op2;} binop;
         struct {Operand op;} unary;
     };
+    struct Intercode* next;
 };
 
 typedef struct InterCode_* InterCode;
 
 struct InterCodes_
 {
-    InterCode code;
+    InterCode code_seg;
     struct InterCodes_ *pre;
     struct InterCodes_ *next;
 };
@@ -47,5 +48,7 @@ InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int typ
 InterCode createInterCode_UNARY(Operand op, int type);
 
 void printInterCode(InterCode code);
+
+void addInterCode(InterCodes codes, InterCode code);
 
 #endif
