@@ -49,6 +49,8 @@ InterCode createInterCode_UNARY(Operand op, int type);
 
 void printInterCode(InterCode code);
 
+
+InterCodes initNewInterCodes();
 void addInterCode(InterCodes codes, InterCode code);
 
 #endif

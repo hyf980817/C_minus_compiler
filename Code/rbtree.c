@@ -781,7 +781,7 @@ void readVarDefStmt(T* var, RBRoot* table)
             T* arr_num = id->r_brother->r_brother;
             while(arr_num != NULL)
             {
-                s.array[i] = arr_num->type_int;
+                s.array[i] = arr_num->int_val;
                 i++;
                 arr_num = arr_num->r_brother->r_brother;
             }

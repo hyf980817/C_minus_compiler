@@ -47,7 +47,7 @@ continue        {yylval = initTreeNode("CONTINUE"); return CONTINUE;}
 {letter}({digit}|{letter})*     {yylval = initTreeNode("ID"); yylval->id = strdup(yytext); return ID;}
 
     /*整型*/
-{non_zero}{digits}|{digit}  {yylval = initTreeNode("INT"); return INT;}
+{non_zero}{digits}|{digit}  {yylval = initTreeNode("INT"); yylval->int_val = atoi(yytext); return INT;}
 
     /*浮点*/
 ({non_zero}{digits}|{digit})"."{digits}|"."{digits}     {yylval = initTreeNode("FLOAT"); return FLOAT;}
