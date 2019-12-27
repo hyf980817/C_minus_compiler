@@ -185,7 +185,7 @@ T* initTreeNode(const char* const name)
     result->child = NULL;
     result->l_brother = NULL;
     result->r_brother = NULL;
-    result->name = strdup(name);
+    result->type = strdup(name);
     result->table = NULL;
     return result;
 }
@@ -202,12 +202,12 @@ void insertChild(T* root, int n, ...)
     assert(root->child == NULL);
     root->child = child;
   
-    //fprintf(stdout, "insert %s in %s as 0 child\n", child->name, root->name);
+    //fprintf(stdout, "insert %s in %s as 0 child\n", child->type, root->type);
     for(i = 1; i < n; i++)
     {
         child = va_arg(ap, T*);
         insertBrotherToRight(root->child, child);
-        //fprintf(stdout, "insert %s in %s as %d child\n", child->name, root->name, i);
+        //fprintf(stdout, "insert %s in %s as %d child\n", child->type, root->type, i);
     }
 
     va_end(ap);       
@@ -230,14 +230,14 @@ void printTree(T* root, int level, FILE *f)
 {
     for(int i = 0; i < level; i++)
         fprintf(f,"    ");
-    if(strcmp(root->name, "ID") == 0)
-        fprintf(f,"%s(%s)\n", root->name, root->id);
+    if(strcmp(root->type, "ID") == 0)
+        fprintf(f,"%s(%s)\n", root->type, root->id);
     else
-        fprintf(f,"%s\n", root->name);
+        fprintf(f,"%s\n", root->type);
 
-    if(strcmp(root->name, "Program") == 0 || strcmp(root->name, "BLOCK") == 0)
+    if(strcmp(root->type, "Program") == 0 || strcmp(root->type, "BLOCK") == 0)
     {
-        printf("\n%s SymbolTable:\n", root->name);
+        printf("\n%s SymbolTable:\n", root->type);
         print_rbtree(root->table);
         printf("\nend of SymbolTable:\n");
     }

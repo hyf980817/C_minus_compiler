@@ -711,7 +711,7 @@ symbol createSymbol(int id_type, int var_type, T* syntaxTreeNode)
 int readVarType(T* type)
 {
     int var_type;
-    switch(type->child->name[5])
+    switch(type->child->type[5])
     {
         case 'I':
             var_type = VAR_INT;
@@ -759,12 +759,12 @@ void readVarDefStmt(T* var, RBRoot* table)
 
     /*读取完type,开始依次读取var_type*/
     var = var->r_brother; //现在var指向VarDecList
-    assert(strcmp(var->name, "VarDecList") == 0);
+    assert(strcmp(var->type, "VarDecList") == 0);
     while(var != NULL)
     {
         
         var = var->child;
-        assert(strcmp(var->name, "VarDec") == 0);
+        assert(strcmp(var->type, "VarDec") == 0);
         T* id = var->child;
         if(search(table->node, id->id) != NULL)
             fprintf(stderr, "Same variable definition :%s", id->id);
@@ -774,7 +774,7 @@ void readVarDefStmt(T* var, RBRoot* table)
         {
             ;//目前直接插入即可
         }
-        else if(id->r_brother->name[0] == 'L') //左中括号, 数组, 注意考虑多维数组的情况
+        else if(id->r_brother->type[0] == 'L') //左中括号, 数组, 注意考虑多维数组的情况
         {
             
             int i = 1;
@@ -811,7 +811,7 @@ void readStmt(T* stmt, RBRoot* tables[], int stack_depth)
     assert(stmt!= NULL && stmt->child !=NULL);
     T* token = stmt->child;
 
-    if(strcmp(token->name, "BLOCK") == 0)
+    if(strcmp(token->type, "BLOCK") == 0)
     {
         RBRoot* new_table = create_rbtree();
         stack_depth = pushNewSymbolTable(tables, stack_depth, new_table);
@@ -820,7 +820,7 @@ void readStmt(T* stmt, RBRoot* tables[], int stack_depth)
     }
     else
     {
-        switch(token->name[0])
+        switch(token->type[0])
         {
             case 'B':break;
             case 'C':break;
@@ -828,20 +828,20 @@ void readStmt(T* stmt, RBRoot* tables[], int stack_depth)
             case 'E':break;
             case 'I': //IF, 含有Stmt
                 token = token->r_brother->r_brother->r_brother->r_brother;
-                assert(token->name[0] == 'S');
+                assert(token->type[0] == 'S');
                 readStmt(token, tables, stack_depth);
                 if(token->r_brother != NULL)
                     readStmt(token->r_brother->r_brother, tables, stack_depth);
                 break;
             case 'W':
                 token = token->r_brother->r_brother->r_brother->r_brother;
-                assert(token->name[0] == 'S');
+                assert(token->type[0] == 'S');
                 readStmt(token, tables, stack_depth);
                 break;
             case 'F':
                 token = token->r_brother->r_brother->r_brother->r_brother;
                 token = token->r_brother->r_brother->r_brother->r_brother;
-                assert(token->name[0] == 'S');
+                assert(token->type[0] == 'S');
                 readStmt(token, tables, stack_depth);
                 break;
         }
@@ -912,7 +912,7 @@ void addSymbolTable(T* root)
     while(root != NULL)
     {
 
-        if(root->name[0] == 'V')
+        if(root->type[0] == 'V')
         {
             readVarDefStmt(root, currentTable);
         }
@@ -929,7 +929,7 @@ void addSymbolTable(T* root)
         **            RP
         **        BLOCK
         */    
-            assert(strcmp(root->name, "FunDef") == 0);
+            assert(strcmp(root->type, "FunDef") == 0);
             T* id_type = root->child;
             int var_type = readVarType(id_type);
            
@@ -952,7 +952,7 @@ void addSymbolTable(T* root)
 
             //接下来读取函数参数
             T* paralist = id->r_brother->r_brother;
-            if(strcmp(paralist->name, "ParaList") == 0)
+            if(strcmp(paralist->type, "ParaList") == 0)
             {
                 while(paralist != NULL)
                 {
