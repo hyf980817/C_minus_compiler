@@ -11,16 +11,18 @@ Operand createOperand_INT(int type, int val, char *name)
     switch (type)
     {
     case OP_VAR:
+        //printf("creating op_var, id: %s\n", name);
         op->name = name;
     case OP_CONST:
         op->int_val = val;
         break;
     case OP_TEMP:
+        //printf("creating op_temp\n");
     case OP_LABEL:
         op->no_val = val;
         break;
     default:
-        fprintf(stderr, "Unknown Op Type in function: createOperand_INT\n");
+        printf("Unknown Op Type in function: createOperand_INT\n");
         break;
     }
 
@@ -45,7 +47,6 @@ InterCode createInterCode_ASSIGN(Operand src, Operand dst)
 InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int type)
 {
     InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
-    assert(type <= I_PARAM && type >= I_LABEL);
     code->kind = type;
     code->binop.op1 = src1;
     code->binop.op2 = src2;
@@ -58,7 +59,7 @@ InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int typ
 InterCode createInterCode_UNARY(Operand op, int type)
 {
     InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
-    assert(type <= I_PARAM && type >= I_LABEL);
+
     code->kind = type;
     code->unary.op = op;
     code->next = NULL;
@@ -71,13 +72,13 @@ void printOperand(Operand op)
     switch (op->kind)
     {
     case OP_CONST:
-        fprintf(stdout, "%d", op->int_val);
+        printf("%d", op->int_val);
         break;
     case OP_VAR:
-        fprintf(stdout, "%s", op->name);
+        printf("%s", op->name);
         break;
     case OP_TEMP:
-        fprintf(stdout , "t%d", op->no_val);
+        printf("t%d", op->no_val);
         break;
     default:
         break;
@@ -91,22 +92,23 @@ void printInterCode(InterCode code)
     {
     case I_ASSIGN:
         printOperand(code->assign.left);
-        fprintf(stdout, " := ");
+        printf(" := ");
         printOperand(code->assign.right);
-        fprintf(stdout, "\n");
+        printf("\n");
         break;
     case I_GOTO:
-        fprintf(stdout, "GOTO Label%d\n", code->unary.op->no_val);
+        printf("GOTO Label%d\n", code->unary.op->no_val);
         break;
     case I_ADD:
         printOperand(code->binop.result);
-        fprintf(stdout, " := ");
+        printf(" := ");
         printOperand(code->binop.op1);
-        fprintf(stdout, " + ");
+        printf(" + ");
         printOperand(code->binop.op2);
-        fprintf(stdout, "\n");
+        printf("\n");
         break;
     default:
+        printf("Unknown code\n");
         break;
     }
 }
@@ -115,10 +117,10 @@ void printInterCode(InterCode code)
 //初始化中间代码段
 InterCodes initNewInterCodes()
 {
-    InterCodes codes;
-    codes.code_seg = NULL;
-    codes.next = NULL;
-    codes.pre = NULL;
+    InterCodes codes = (InterCodes)malloc(sizeof(struct InterCodes_));
+    codes->code_seg = NULL;
+    codes->r_brother = NULL;
+    codes->child = NULL;
 
     return codes;
 }
@@ -126,11 +128,11 @@ InterCodes initNewInterCodes()
 //向中间代码段中添加一条中间代码
 void addInterCode(InterCodes codes, InterCode code)
 {   
-    InterCode end = codes.code_seg;
+    InterCode end = codes->code_seg;
 
     if(end == NULL)
     {
-        codes.code_seg = code;
+        codes->code_seg = code;
         return;
     }
 
@@ -140,4 +142,33 @@ void addInterCode(InterCodes codes, InterCode code)
     }
 
     end->next = code;
+}
+
+void PrintInterCodes(InterCodes codes)
+{
+    if(codes->child != NULL)
+    {
+        //printf("In codes\n");
+        assert(codes->code_seg == NULL);
+        InterCodes child = codes->child;
+        while(child != NULL)
+        {
+            //printf("In printing child\n");
+            PrintInterCodes(child);
+            child = child->r_brother;
+        }
+    }
+    else
+    {
+        //printf("In printging code seg\n");
+        assert(codes->code_seg != NULL);
+        InterCode code = codes->code_seg;
+        while(code != NULL)
+        {
+            //printf("In printing code\n");
+            printInterCode(code);
+            code = code->next;
+        }
+    }
+    
 }

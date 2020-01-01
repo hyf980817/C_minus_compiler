@@ -38,7 +38,10 @@ syntax-c-debug: $(YFILE)
 
 
 intercodeTest: 
-	$(CC) -o intercode_test InterCode.c InterCode_test.c
+	$(CC) -o intercode_test InterCode.c InterCode_test.c rbtree.c
+
+intercodeTest-debug: 
+	$(CC) -o -g intercode_test InterCode.c InterCode_test.c rbtree.c
 -include $(patsubst %.o, %.d, $(OBJS))
 
 # 定义的一些伪目标

@@ -80,6 +80,9 @@ int pushNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r);
 
 
 /**************************************语法树的定义**************************************/
+
+enum {Program = 2048, DefList, VarDefStmt, FunDef, VarDecList, TYPE, VarDec, FunDec, ParaList, ParaDec, BLOCK, VarDefStmtList, SentenceList, Sentence, Stmt, Expr, Args} NonTerminals;
+
 typedef struct T {
     union {
         int int_val;
@@ -87,7 +90,8 @@ typedef struct T {
         char char_val;
         char* str_val;
     };
-    char *type;  
+    char *type;
+    int type_no;  
     char *id;
     RBRoot *table;
     struct T* child;
@@ -95,7 +99,7 @@ typedef struct T {
     struct T* r_brother;
 }T;
 
-T* initTreeNode(const char* const name);
+T* initTreeNode(const char* const name, int type_no);
 void insertChild(T* root, int n , ...);
 void insertBrotherToRight(T* root, T* newnode);
 

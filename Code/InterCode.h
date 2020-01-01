@@ -1,7 +1,7 @@
 #ifndef _INTERCODE_H_
 #define _INTERCODE_H_
 struct Operand_ {
-    enum {OP_VAR, OP_CONST, OP_ADDR, OP_TEMP ,OP_LABEL} kind;
+    enum {OP_VAR = 4096, OP_CONST, OP_ADDR, OP_TEMP ,OP_LABEL} kind;
     union {
         int int_val;
         float float_val;
@@ -13,29 +13,31 @@ struct Operand_ {
 
 typedef struct Operand_* Operand;
 
+
+//单条指令, 但是next指针可以指向这条指令的下一条指令, 所以事实上能表示一串指令
 struct InterCode_
 {
-    enum {I_LABEL, I_FUNCTION, I_ASSIGN, I_ADD, I_SUB, I_MUL, 
-    I_DIV, I_GOTO, I_IFGOTO, I_RETURN, I_ARG, I_DEC, I_PARAM} kind;
+    enum {I_ASSIGN = 8192, I_ADD, I_GOTO} kind;
     union 
     {
         struct {Operand right, left;} assign;
         struct {Operand result, op1, op2;} binop;
         struct {Operand op;} unary;
     };
-    struct Intercode* next;
+    struct InterCode_* next;
 };
 
 typedef struct InterCode_* InterCode;
 
+//树型IR的节点
 struct InterCodes_
 {
-    InterCode code_seg;
-    struct InterCodes_ *pre;
-    struct InterCodes_ *next;
+    InterCode code_seg; //中间代码, 唯有叶子节点这里才为非空.
+    struct InterCodes_ *child;
+    struct InterCodes_ *r_brother;
 };
 
-typedef struct InterCodes_ InterCodes;
+typedef struct InterCodes_ *InterCodes;
 
 
 
@@ -53,4 +55,6 @@ void printInterCode(InterCode code);
 InterCodes initNewInterCodes();
 void addInterCode(InterCodes codes, InterCode code);
 
+
+void PrintInterCodes(InterCodes codes);
 #endif
