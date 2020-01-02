@@ -30,7 +30,6 @@ Operand createOperand_INT(int type, int val, char *name)
 }
 
 
-
 //创建赋值表达式的中间语句
 InterCode createInterCode_ASSIGN(Operand src, Operand dst)
 {
@@ -41,6 +40,27 @@ InterCode createInterCode_ASSIGN(Operand src, Operand dst)
     code->next = NULL;
     return code;
 }
+
+//创建函数定义的中间语句
+InterCode createInterCode_FUNDEF(char *name, int return_type)
+{
+    InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
+    code->kind = I_FUNDEF;
+    code->fundef.name = name;
+    code->fundef.return_type = return_type;
+    code->next = NULL;
+    return code;
+}
+
+InterCode createInterCode_PARAM(Operand param)
+{
+    InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
+    code->kind = I_PARAM;
+    code->param.op = param;
+    code->next = NULL;
+    return code;
+}
+
 
 
 //创建二元操作数的表达式中间语句
@@ -66,13 +86,18 @@ InterCode createInterCode_UNARY(Operand op, int type)
     return code; 
 }
 
+InterCode createInterCode_FunDef()
+{
+
+}
+
 //打印一个操作数
 void printOperand(Operand op)
 {
     switch (op->kind)
     {
     case OP_CONST:
-        printf("%d", op->int_val);
+        printf("#%d", op->int_val);
         break;
     case OP_VAR:
         printf("%s", op->name);
@@ -142,6 +167,21 @@ void addInterCode(InterCodes codes, InterCode code)
     }
 
     end->next = code;
+}
+
+void addInterCodesAsChild(InterCodes codes, InterCodes newcodes)
+{
+    assert(codes != NULL && newcodes != NULL);
+    InterCodes child = codes->child;
+    if(child == NULL)
+        codes->child = newcodes;
+    else
+    {
+        while(child->r_brother != NULL)
+            child = child->r_brother;
+        child->r_brother = newcodes;
+    }
+    
 }
 
 void PrintInterCodes(InterCodes codes)
