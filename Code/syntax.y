@@ -275,5 +275,7 @@ int main(int argc, char** argv)
         printTree(TreeRoot, 0, f1);
     }
 
+    InterCodes codes = translate_Program(TreeRoot);
+    PrintInterCodes(codes);
     return 0;
 }

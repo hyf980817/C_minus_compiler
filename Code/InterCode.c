@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "syntax.tab.h"
 
 //创建一个操作数
 Operand createOperand_INT(int type, int val, char *name)
@@ -124,7 +125,7 @@ void printOperand(Operand op)
         printf("%s", op->name);
         break;
     case OP_TEMP:
-        printf("t%d", op->no_val);
+        printf("$t%d", op->no_val);
         break;
     default:
         break;
@@ -153,6 +154,48 @@ void printInterCode(InterCode code)
         printOperand(code->binop.op2);
         printf("\n");
         break;
+    case I_FUNDEF:
+        printf("Function %s : \n", code->fundef.name);
+        break;
+    case I_PARAM:
+        printf("PARAM %s\n", code->param.op->name);
+        break;
+    case I_RETURN:
+        printf("Return t%d\n", code->unary.op->int_val);
+        break;
+    case I_LABEL:
+        printf("LABEL %d:\n", code->label.op->int_val);
+        break;
+    case I_IFGOTO:
+        printf("IF ");
+        printOperand(code->ifgoto.left);
+        switch (code->ifgoto.relop)
+        {
+        case OP_GT:
+            printf(" > ");
+            break;
+        case OP_LT:
+            printf(" < ");
+            break;
+        case OP_GE:
+            printf(" >= ");
+            break;
+        case OP_LE:
+            printf(" <= ");
+            break;
+        case OP_EQ:
+            printf(" == ");
+            break;
+        case OP_NEQ:
+            printf(" != ");
+            break;
+        default:
+            printf(" ?? ");
+            break;
+        }
+        printOperand(code->ifgoto.right);
+        printf(" GOTO LABEL%d\n", code->ifgoto.label->int_val);
+        break;
     default:
         printf("Unknown code\n");
         break;
@@ -175,19 +218,27 @@ InterCodes initNewInterCodes()
 void addInterCode(InterCodes codes, InterCode code)
 {   
     InterCode end = codes->code_seg;
+    assert(codes->code_seg == NULL || codes->child == NULL);
 
-    if(end == NULL)
+    if(end == NULL && codes->child == NULL)
     {
         codes->code_seg = code;
-        return;
     }
 
-    while(end->next != NULL)
+    if(end != NULL && codes->child == NULL){
+        while(end->next != NULL)
+        {
+            end = end->next;
+        }
+        end->next = code;
+    }
+
+    if(end == NULL && codes->child != NULL)
     {
-        end = end->next;
+        addInterCode(codes->child, code);
+        
     }
 
-    end->next = code;
 }
 
 void addInterCodesAsChild(InterCodes codes, InterCodes newcodes)
@@ -210,7 +261,8 @@ void PrintInterCodes(InterCodes codes)
     if(codes->child != NULL)
     {
         //printf("In codes\n");
-        assert(codes->code_seg == NULL);
+        if(codes->code_seg != NULL)
+            assert(codes->code_seg == NULL);
         InterCodes child = codes->child;
         while(child != NULL)
         {
@@ -222,7 +274,9 @@ void PrintInterCodes(InterCodes codes)
     else
     {
         //printf("In printging code seg\n");
-        assert(codes->code_seg != NULL);
+        if(codes->code_seg != NULL)
+            assert(codes->code_seg != NULL);
+        
         InterCode code = codes->code_seg;
         while(code != NULL)
         {

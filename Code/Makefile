@@ -18,10 +18,10 @@ LFO = $(LFC:.c=.o)
 YFO = $(YFC:.c=.o)
 
 parser: syntax-c lexical
-	$(CC) -o parser $(YFC) rbtree.c -lfl -ly
+	$(CC) -o parser $(YFC) rbtree.c Translate.c InterCode.c -lfl -ly
 
 parser-debug: syntax-c-debug lexical
-	$(CC) -o parser $(YFC) rbtree.c -lfl -ly -g
+	$(CC) -o parser $(YFC) rbtree.c Translate.c InterCode.c -lfl -ly -g
 
 syntax: lexical syntax-c
 	$(CC) -c $(YFC) -o $(YFO)

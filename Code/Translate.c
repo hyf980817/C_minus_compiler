@@ -1,10 +1,9 @@
-#include "InterCode.h"
 #include "Tree.h"
 #include <assert.h>
 #include "syntax.tab.h"
-#define GET_TEMP 0
-#define FREE_TEMP 1
+#include <stdio.h>
 
+InterCodes translate_block(T* block, RBRoot* tables[], int depth);
 
 //管理temp类型的寄存器, 可以获取或者释放
 int manage_temp(int mode, int no)
@@ -36,7 +35,8 @@ int manage_temp(int mode, int no)
 int manage_label()
 {
     static int label = 0;
-    return label++;
+    label++;
+    return label;
 }
 
 //翻译表达式
@@ -142,13 +142,13 @@ InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false,
         case OP_GT:
         case OP_LT:
         case OP_EQ:
-        case OP_NEQ:
+        case OP_NEQ:{
             int t1 = manage_temp(GET_TEMP, 0);
             int t2 = manage_temp(GET_TEMP, 0);
             Operand temp1 = createOperand_INT(OP_TEMP, t1, NULL);
             Operand temp2 = createOperand_INT(OP_TEMP, t2, NULL);
             InterCodes codes1 = translate_Exp(expr1, tables, depth, temp1);
-            InterCodes codes2 = translate_Exp(expr1, tables, depth, temp2);
+            InterCodes codes2 = translate_Exp(expr2, tables, depth, temp2);
             InterCode code_ifgoto = createInterCode_IFGOTO(temp1, temp2, label_true, op->type_no);
             InterCode code_goto_false = createInterCode_UNARY(label_false, I_GOTO);
             addInterCode(codes2, code_ifgoto);
@@ -157,8 +157,9 @@ InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false,
             addInterCodesAsChild(codes, codes1);
             addInterCodesAsChild(codes, codes2);
             return codes;
+        }
         // bool
-        case OP_BIT_AND:
+        case OP_BIT_AND:{
             int l1 = manage_label();
             Operand label1 = createOperand_INT(OP_LABEL, l1, NULL);
             InterCodes codes1 = translate_Condition(expr1, label1, label_false, tables, depth);
@@ -169,7 +170,8 @@ InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false,
             addInterCodesAsChild(codes, codes1);
             addInterCodesAsChild(codes, codes2);
             return codes;
-        case OP_BIT_OR:
+        }
+        case OP_BIT_OR:{
             int l1 = manage_label();
             Operand label1 = createOperand_INT(OP_LABEL, l1, NULL);
             InterCodes codes1 = translate_Condition(expr1, label_true, label1, tables, depth);
@@ -180,12 +182,14 @@ InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false,
             addInterCodesAsChild(codes, codes1);
             addInterCodesAsChild(codes, codes2);
             return codes;
+        }
         default:
             printf("Unknown OP!!!\n");
             break;
         }
 
     }
+    return NULL;
 }
 
 
@@ -201,7 +205,7 @@ InterCodes translate_Stmt(T* stmt, RBRoot* tables[], int depth)
 
 
     if(child->type_no == BLOCK) {  //Stmt -> BLOCK
-        tables[++depth] = (T*)child->table;
+        tables[++depth] = child->table;
         return translate_block(child, tables, depth--);
     }
 
@@ -214,6 +218,7 @@ InterCodes translate_Stmt(T* stmt, RBRoot* tables[], int depth)
         codes = translate_Exp(expr, tables, depth, temp);
         InterCode return_code = createInterCode_UNARY(temp, I_RETURN);
         addInterCode(codes, return_code);
+        manage_temp(FREE_TEMP, t1);
     }
 
 
@@ -352,12 +357,13 @@ InterCodes translate_block(T* block, RBRoot* tables[], int depth)
     T* sentence_list = vardefstmt_list->r_brother;
     assert(sentence_list != NULL);
     T* sentence = sentence_list->child;
-
+    
     while (sentence != NULL)
     {
         T* stmt = sentence->child;
         assert(stmt != NULL);
         InterCodes newcodes = translate_Stmt(stmt, tables, depth);
+        //printInterCodes(newcodes);
         addInterCodesAsChild(codes, newcodes);
 
         //将sentence指向下一条sentence
@@ -384,12 +390,15 @@ InterCodes translate_block(T* block, RBRoot* tables[], int depth)
 *                    ...
 */
 
-InterCodes translate_Program(T* program, RBRoot* tables[], int depth)
+InterCodes translate_Program(T* program)
 {
     assert(program != NULL);
+    RBRoot* tables[MAX_DEPTH];
+    int depth = -1;
+    tables[++depth] = program->table;
     T* deflist = program->child;
     InterCodes codes = initNewInterCodes();
-    while(deflist != NULL)
+    while(deflist != NULL && deflist->child != NULL)
     {
         T* child = deflist->child;
         if(child->type_no == VarDecList)
@@ -400,17 +409,23 @@ InterCodes translate_Program(T* program, RBRoot* tables[], int depth)
             T* return_type = child->child;
             T* fun_dec = return_type->r_brother;
             T* fun_id = fun_dec->child; 
-            InterCodes codes_func = initNewInterCodes();
+            InterCodes codes_func_def = initNewInterCodes();
             InterCode function = createInterCode_FUNDEF(fun_id->id, return_type->child->type_no);
-            addInterCode(codes_func, function);
-            addInterCodesAsChild(codes, codes_func);
-            //翻译参数
+            addInterCode(codes_func_def, function);
+            addInterCodesAsChild(codes, codes_func_def);
+            //翻译参数, 如果lp的右边不是rp
             T* lp = fun_id->r_brother;
-            InterCodes codes_params = translate_args(lp, I_PARAM, tables, depth);
-
+            if(lp->r_brother->type_no != RP)
+            {
+                InterCodes codes_params = translate_args(lp, I_PARAM, tables, depth);
+                addInterCodesAsChild(codes, codes_params);
+            }
             //翻译block
             T* block = fun_dec->r_brother;
-
+            tables[++depth] = block->table;
+            InterCodes codes_func_block = translate_block(block, tables, depth);
+            depth--;
+            addInterCodesAsChild(codes, codes_func_block);
             
         }
         deflist = child->r_brother;
