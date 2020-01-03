@@ -45,7 +45,7 @@ intercodeTest-debug:
 -include $(patsubst %.o, %.d, $(OBJS))
 
 # 定义的一些伪目标
-.PHONY: clean test
+.PHONY: clean test count
 test:
 	./parser ../Test/test1.cmm
 clean:
@@ -53,3 +53,6 @@ clean:
 	rm -f $(OBJS) $(OBJS:.o=.d)
 	rm -f $(LFC) $(YFC) $(YFC:.c=.h)
 	rm -f *~
+
+count: clean
+	wc -l *.l *.y *.c *.h

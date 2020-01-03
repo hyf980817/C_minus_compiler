@@ -88,6 +88,8 @@ continue        {yylval = initTreeNode("CONTINUE", CONTINUE); return CONTINUE;}
 "&"              {yylval = initTreeNode("OP_BIT_AND", OP_BIT_AND); return OP_BIT_AND;}
 "^"              {yylval = initTreeNode("OP_BIT_XOR", OP_BIT_XOR); return OP_BIT_XOR;}    
 "|"              {yylval = initTreeNode("OP_BIT_OR", OP_BIT_OR); return OP_BIT_OR;}    
+"&&"              {yylval = initTreeNode("OP_AND", OP_AND); return OP_AND;}    
+"||"              {yylval = initTreeNode("OP_OR", OP_OR); return OP_OR;}    
 "="              {yylval = initTreeNode("OP_ASSIGN", OP_ASSIGN); return OP_ASSIGN;}    
 
 

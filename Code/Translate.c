@@ -123,30 +123,155 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
     return codes;
 }
 
+//翻译bool表达式, 包括关系运算符, AND, OR
+InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false, RBRoot* tables[], int depth)
+{
+    assert(expr != NULL);
+    
+    if(expr->child->type_no == Expr)
+    {
+        T* expr1 = expr->child;
+        T* op = expr1->r_brother;
+        T* expr2 = op->r_brother;
 
+        switch (op->type_no)
+        {
+        //比较运算符
+        case OP_GE:
+        case OP_LE:
+        case OP_GT:
+        case OP_LT:
+        case OP_EQ:
+        case OP_NEQ:
+            int t1 = manage_temp(GET_TEMP, 0);
+            int t2 = manage_temp(GET_TEMP, 0);
+            Operand temp1 = createOperand_INT(OP_TEMP, t1, NULL);
+            Operand temp2 = createOperand_INT(OP_TEMP, t2, NULL);
+            InterCodes codes1 = translate_Exp(expr1, tables, depth, temp1);
+            InterCodes codes2 = translate_Exp(expr1, tables, depth, temp2);
+            InterCode code_ifgoto = createInterCode_IFGOTO(temp1, temp2, label_true, op->type_no);
+            InterCode code_goto_false = createInterCode_UNARY(label_false, I_GOTO);
+            addInterCode(codes2, code_ifgoto);
+            addInterCode(codes2, code_goto_false);
+            InterCodes codes = initNewInterCodes();
+            addInterCodesAsChild(codes, codes1);
+            addInterCodesAsChild(codes, codes2);
+            return codes;
+        // bool
+        case OP_BIT_AND:
+            int l1 = manage_label();
+            Operand label1 = createOperand_INT(OP_LABEL, l1, NULL);
+            InterCodes codes1 = translate_Condition(expr1, label1, label_false, tables, depth);
+            InterCodes codes2 = translate_Condition(expr2, label_true, label_false, tables, depth);
+            InterCodes codes = initNewInterCodes();
+            InterCode code_label1 = createInterCode_LABEL(label1);
+            addInterCode(codes1, code_label1);
+            addInterCodesAsChild(codes, codes1);
+            addInterCodesAsChild(codes, codes2);
+            return codes;
+        case OP_BIT_OR:
+            int l1 = manage_label();
+            Operand label1 = createOperand_INT(OP_LABEL, l1, NULL);
+            InterCodes codes1 = translate_Condition(expr1, label_true, label1, tables, depth);
+            InterCodes codes2 = translate_Condition(expr2, label_true, label_false, tables, depth);
+            InterCodes codes = initNewInterCodes();
+            InterCode code_label1 = createInterCode_LABEL(label1);
+            addInterCode(codes1, code_label1);
+            addInterCodesAsChild(codes, codes1);
+            addInterCodesAsChild(codes, codes2);
+            return codes;
+        default:
+            printf("Unknown OP!!!\n");
+            break;
+        }
+
+    }
+}
+
+
+//翻译一条语句
 InterCodes translate_Stmt(T* stmt, RBRoot* tables[], int depth)
 {
     assert(stmt != NULL);
+    InterCodes codes = initNewInterCodes();
     T* child = stmt->child;
-    if(child->type_no == Expr)
+
+    if(child->type_no == Expr) //Stmt-> Expr SEMI
         return translate_Exp(child, tables, depth, NULL);
 
 
+    if(child->type_no == BLOCK) {  //Stmt -> BLOCK
+        tables[++depth] = (T*)child->table;
+        return translate_block(child, tables, depth--);
+    }
+
+
+    if(child->type_no == RETURN) { //Stmt -> RETURN Expr SEMI
+        int t1 = manage_temp(GET_TEMP, 0);
+        Operand temp = createOperand_INT(OP_TEMP, t1, NULL);
+        T* expr = child->r_brother;
+        assert(expr != NULL);
+        codes = translate_Exp(expr, tables, depth, temp);
+        InterCode return_code = createInterCode_UNARY(temp, I_RETURN);
+        addInterCode(codes, return_code);
+    }
+
+
+    if(child->type_no == IF) //if语句, 两种情况, if(expr) stmt 和 if(expr) stmt else stmt
+    {
+        T* If = child;
+        assert(child->r_brother != NULL);
+        assert(child->r_brother->r_brother != NULL);
+        assert(child->r_brother->r_brother->r_brother != NULL);
+        assert(child->r_brother->r_brother->r_brother->r_brother != NULL);
+
+        T* first_stmt= child->r_brother->r_brother->r_brother->r_brother;
+        T* expr = If->r_brother->r_brother;
+        if(first_stmt->r_brother == NULL) //if(expr) stmt
+        {
+            //获取两个label
+            int l1 = manage_label();
+            int l2 = manage_label();
+            Operand label1 = createOperand_INT(OP_LABEL, l1, NULL);
+            Operand label2 = createOperand_INT(OP_LABEL, l2, NULL);
+            //TODO : 翻译bool表达式
+            InterCodes codes1 =translate_Condition(expr, label1, label2, tables, depth);
+            InterCodes codes2 = translate_Stmt(first_stmt, tables, depth);
+            InterCode code_label1 = createInterCode_LABEL(label1);
+            InterCode code_label2 = createInterCode_LABEL(label2);
+            addInterCode(codes1, code_label1);
+            addInterCode(codes2, code_label2);
+
+            addInterCodesAsChild(codes, codes1);
+            addInterCodesAsChild(codes, codes2);
+            //return codes1 + code_label1 + codes2 + code_label2
+        }
+        else
+        {
+            T* second_stmt = first_stmt->r_brother->r_brother;
+            //获取label
+            int l1 = manage_label();
+            int l2 = manage_label();
+            int l3 = manage_label();
+            Operand label1 = createOperand_INT(OP_LABEL, l1, NULL);
+            Operand label2 = createOperand_INT(OP_LABEL, l2, NULL);
+            Operand label3 = createOperand_INT(OP_LABEL, l3, NULL);
+            //TODO : 翻译bool表达式
+            //codes1 =translate_Condition(expr, label1, label2, table, depth)
+            InterCodes codes2 = translate_Stmt(first_stmt, tables, depth);
+            InterCodes codes3 = translate_Stmt(second_stmt, tables, depth);
+            InterCode code_label1 = createInterCode_LABEL(label1);
+            InterCode code_label2 = createInterCode_LABEL(label2);
+            InterCode code_label3 = createInterCode_LABEL(label3);
+            InterCode goto_label3 = createInterCode_UNARY(label3, I_GOTO);
+            //return codes1 + code_label1 + codes2 + goto_label3 + code_label2 + codes3 + code_label3;
+        }
+        
+    }
+
+    return codes;
 }
 
-//翻译整个程序
-/*
-*Program
-*    DefList
-*        VarDefStmt
-*            ...
-*        DefList
-*            FunDef
-*                ...
-*            DefList
-*                FunDef
-*                    ...
-*/
 
 
 //翻译参数语句, 即可以翻译函数定义时的参数的定义, 也可以翻译函数调用时的传入参数
@@ -220,10 +345,44 @@ InterCodes translate_args(T* lp, int mode, RBRoot* tables[], int depth)
 //翻译block
 InterCodes translate_block(T* block, RBRoot* tables[], int depth)
 {
+    InterCodes codes = initNewInterCodes();
+    assert(block != NULL);
+    T* vardefstmt_list = block->child->r_brother;
+    //跳过局部变量定义的翻译
+    T* sentence_list = vardefstmt_list->r_brother;
+    assert(sentence_list != NULL);
+    T* sentence = sentence_list->child;
+
+    while (sentence != NULL)
+    {
+        T* stmt = sentence->child;
+        assert(stmt != NULL);
+        InterCodes newcodes = translate_Stmt(stmt, tables, depth);
+        addInterCodesAsChild(codes, newcodes);
+
+        //将sentence指向下一条sentence
+        sentence = sentence->r_brother;
+        if(sentence != NULL)
+            sentence = sentence->child;
+    }
     
+    return codes;
 }
 
 
+//翻译整个程序
+/*
+*Program
+*    DefList
+*        VarDefStmt
+*            ...
+*        DefList
+*            FunDef
+*                ...
+*            DefList
+*                FunDef
+*                    ...
+*/
 
 InterCodes translate_Program(T* program, RBRoot* tables[], int depth)
 {

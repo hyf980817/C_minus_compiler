@@ -22,10 +22,13 @@ struct InterCode_
     {
         struct {Operand right, left;} assign; //I_ASSIGN, I_CALL
         struct {Operand result, op1, op2;} binop; //I_ADD
-        struct {Operand op;} unary;  //I_LABEL, I_GOTO, I_RETURN, I_ARG
+        struct {Operand op;} unary;  //I_GOTO, I_RETURN, I_ARG
         struct {Operand left, right, label; int relop;} ifgoto;  //I_IFGOTO
         struct {char *name; int return_type;} fundef;
         struct {Operand op;} param;
+        struct {Operand op;} label;
+
+        
     };
     struct InterCode_* next;
 };
@@ -51,6 +54,8 @@ InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int typ
 InterCode createInterCode_UNARY(Operand op, int type);
 InterCode createInterCode_FUNDEF(char *name, int return_type);
 InterCode createInterCode_PARAM(Operand param);
+InterCode createInterCode_LABEL(Operand label);
+InterCode createInterCode_IFGOTO(Operand left, Operand right, Operand label, int relop);
 
 
 void printInterCode(InterCode code);

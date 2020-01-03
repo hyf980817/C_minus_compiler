@@ -61,6 +61,27 @@ InterCode createInterCode_PARAM(Operand param)
     return code;
 }
 
+InterCode createInterCode_LABEL(Operand label)
+{
+    InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
+    code->kind = I_LABEL;
+    code->param.op = label;
+    code->next = NULL;
+    return code;
+}
+
+InterCode createInterCode_IFGOTO(Operand left, Operand right, Operand label, int relop)
+{
+    InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
+    code->kind = I_IFGOTO;
+    code->ifgoto.label = label;
+    code->ifgoto.right = left;
+    code->ifgoto.left = right;
+    code->ifgoto.relop = relop;
+    code->next = NULL;
+    return code;    
+}
+
 
 
 //创建二元操作数的表达式中间语句
