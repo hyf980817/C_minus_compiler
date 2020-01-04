@@ -17,14 +17,15 @@ typedef struct Operand_* Operand;
 //单条指令, 但是next指针可以指向这条指令的下一条指令, 所以事实上能表示一串指令
 struct InterCode_
 {
-    enum {I_ASSIGN = 8192, I_ADD, I_GOTO, I_IFGOTO, I_FUNDEF, I_CALL, I_ARG, I_PARAM, I_LABEL, I_RETURN} kind;
+    enum {I_ASSIGN = 8192, I_BINOP, I_GOTO, I_IFGOTO, I_FUNDEF, I_CALL, I_ARG, I_PARAM, I_LABEL, I_RETURN} kind;
     union 
     {
         struct {Operand right, left;} assign; //I_ASSIGN, I_CALL
-        struct {Operand result, op1, op2;} binop; //I_ADD
+        struct {Operand result, op1, op2; int op_type;} binop; 
         struct {Operand op;} unary;  //I_GOTO, I_RETURN, I_ARG
         struct {Operand left, right, label; int relop;} ifgoto;  //I_IFGOTO
         struct {char *name; int return_type;} fundef;
+        struct {char *name;} call;
         struct {Operand op;} param;
         struct {Operand op;} label;
 
@@ -50,9 +51,10 @@ typedef struct InterCodes_ *InterCodes;
 Operand createOperand_INT(int type, int val, char *name);
 
 InterCode createInterCode_ASSIGN(Operand src, Operand dst);
-InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int type);
+InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int code_type, int op_type);
 InterCode createInterCode_UNARY(Operand op, int type);
 InterCode createInterCode_FUNDEF(char *name, int return_type);
+InterCode createInterCode_CALL(char *name);
 InterCode createInterCode_PARAM(Operand param);
 InterCode createInterCode_LABEL(Operand label);
 InterCode createInterCode_IFGOTO(Operand left, Operand right, Operand label, int relop);

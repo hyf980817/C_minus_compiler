@@ -53,6 +53,15 @@ InterCode createInterCode_FUNDEF(char *name, int return_type)
     return code;
 }
 
+InterCode createInterCode_CALL(char *name)
+{
+    InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
+    code->kind = I_CALL;
+    code->call.name = name;
+    code->next = NULL;
+    return code;
+}
+
 InterCode createInterCode_PARAM(Operand param)
 {
     InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
@@ -86,14 +95,15 @@ InterCode createInterCode_IFGOTO(Operand left, Operand right, Operand label, int
 
 
 //创建二元操作数的表达式中间语句
-InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int type)
+InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int code_type, int op_type)
 {
     InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
-    code->kind = type;
+    code->kind = code_type;
     code->binop.op1 = src1;
     code->binop.op2 = src2;
     code->binop.result = dst;
     code->next = NULL;
+    code->binop.op_type = op_type;
     return code;
 }
 
@@ -146,11 +156,43 @@ void printInterCode(InterCode code)
     case I_GOTO:
         printf("GOTO Label%d\n", code->unary.op->no_val);
         break;
-    case I_ADD:
+    case I_BINOP:
         printOperand(code->binop.result);
         printf(" := ");
         printOperand(code->binop.op1);
-        printf(" + ");
+        switch (code->binop.op_type)
+        {
+        case OP_ADD:
+            printf(" + ");
+            break;
+        case OP_SUB:
+            printf(" - ");
+            break;
+        case OP_STAR:
+            printf(" * ");
+            break;
+        case OP_DIV:
+            printf(" / ");
+            break;
+        case OP_SHL:
+            printf(" << ");
+            break;
+        case OP_SHR:
+            printf(" >> ");
+            break;
+        case OP_BIT_AND:
+            printf(" & ");
+            break;
+        case OP_BIT_OR:
+            printf(" | ");
+            break;  
+        case OP_BIT_XOR:
+            printf(" ^ ");
+            break;  
+        default:
+            printf("Unkown binop!\n");
+            break;
+        }
         printOperand(code->binop.op2);
         printf("\n");
         break;
@@ -217,9 +259,13 @@ InterCodes initNewInterCodes()
 //向中间代码段中添加一条中间代码
 void addInterCode(InterCodes codes, InterCode code)
 {   
-    InterCode end = codes->code_seg;
+    
     assert(codes->code_seg == NULL || codes->child == NULL);
 
+    while(codes->r_brother != NULL)
+        codes = codes->r_brother;
+
+    InterCode end = codes->code_seg;
     if(end == NULL && codes->child == NULL)
     {
         codes->code_seg = code;
@@ -236,7 +282,6 @@ void addInterCode(InterCodes codes, InterCode code)
     if(end == NULL && codes->child != NULL)
     {
         addInterCode(codes->child, code);
-        
     }
 
 }

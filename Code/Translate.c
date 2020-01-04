@@ -45,21 +45,40 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
     InterCodes codes = initNewInterCodes();
     T* child = Exp->child;
 
-    if(child->type[0] == 'I')   //Expr->ID || Expr->INT
+    if(child->type[0] == 'I')   //Expr->ID || Expr->INT || Expr-> ID LP RP || Expr-> ID LP Args RP
     {
         //printf("In ID or INT\n");
         Operand op = NULL;
-        if(child->type_no == INT)  
+        switch (child->type_no)
         {
+        case INT:
             op = createOperand_INT(OP_CONST, child->int_val,NULL);
+            InterCode code = createInterCode_ASSIGN(op, place);
+            addInterCode(codes, code);
+            break;
+        case ID:
+            if(child->r_brother == NULL)
+            {
+                op = createOperand_INT(OP_VAR, 0, child->id);
+                InterCode code = createInterCode_ASSIGN(op, place);
+                addInterCode(codes, code);
+                break;
+            }
+            //函数调用
+            T* fundec = child;
+            T* lp = child->r_brother;
+            InterCode code_call = createInterCode_CALL(fundec->child->id);
+            if(lp->r_brother->type_no == RP)
+            {
+
+            }
+            break;
+        default:
+            break;
         }
-        if(child->type_no == ID)
-        {
-            //printf("child->id:%s", child->id);
-            op = createOperand_INT(OP_VAR, 0, child->id);
-        }
-        InterCode code = createInterCode_ASSIGN(op, place);
-        addInterCode(codes, code);
+
+
+
     }
     if(child->type[0] == 'E')  //二元运算或数组   Expr-> Expr OP_XXXX Expr   || Expr-> Expr LB Expr RB
     {
@@ -96,7 +115,7 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
         }
 
         //Expr1 + Expr2的翻译
-        if(OP->type_no == OP_ADD)
+        if(OP->type_no >= OP_STAR && OP->type_no <=OP_BIT_OR)
         {
             //printf("In OP\n");
             int t1 = manage_temp(GET_TEMP, 0);
@@ -109,7 +128,7 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
             InterCodes code3 = initNewInterCodes();
             if(place != NULL)
             {
-                InterCode c1 = createInterCode_BINOP(place, temp1, temp2, I_ADD);
+                InterCode c1 = createInterCode_BINOP(place, temp1, temp2, I_BINOP, OP->type_no);
                 addInterCode(code3, c1);
                 code2->r_brother = code3;
             }
@@ -156,10 +175,12 @@ InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false,
             InterCodes codes = initNewInterCodes();
             addInterCodesAsChild(codes, codes1);
             addInterCodesAsChild(codes, codes2);
+            manage_temp(FREE_TEMP, t2);
+            manage_temp(FREE_TEMP, t1);
             return codes;
         }
         // bool
-        case OP_BIT_AND:{
+        case OP_AND:{
             int l1 = manage_label();
             Operand label1 = createOperand_INT(OP_LABEL, l1, NULL);
             InterCodes codes1 = translate_Condition(expr1, label1, label_false, tables, depth);
@@ -171,7 +192,7 @@ InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false,
             addInterCodesAsChild(codes, codes2);
             return codes;
         }
-        case OP_BIT_OR:{
+        case OP_OR:{
             int l1 = manage_label();
             Operand label1 = createOperand_INT(OP_LABEL, l1, NULL);
             InterCodes codes1 = translate_Condition(expr1, label_true, label1, tables, depth);
@@ -244,7 +265,13 @@ InterCodes translate_Stmt(T* stmt, RBRoot* tables[], int depth)
             InterCodes codes2 = translate_Stmt(first_stmt, tables, depth);
             InterCode code_label1 = createInterCode_LABEL(label1);
             InterCode code_label2 = createInterCode_LABEL(label2);
+            printf("\n\n");
+            PrintInterCodes(codes1);
+            printf("\n\n");
             addInterCode(codes1, code_label1);
+            printf("\n\n");
+            PrintInterCodes(codes1);
+            printf("\n\n");
             addInterCode(codes2, code_label2);
 
             addInterCodesAsChild(codes, codes1);
@@ -261,15 +288,24 @@ InterCodes translate_Stmt(T* stmt, RBRoot* tables[], int depth)
             Operand label1 = createOperand_INT(OP_LABEL, l1, NULL);
             Operand label2 = createOperand_INT(OP_LABEL, l2, NULL);
             Operand label3 = createOperand_INT(OP_LABEL, l3, NULL);
-            //TODO : 翻译bool表达式
-            //codes1 =translate_Condition(expr, label1, label2, table, depth)
+     
+
+            InterCodes codes1 =translate_Condition(expr, label1, label2, tables, depth);
             InterCodes codes2 = translate_Stmt(first_stmt, tables, depth);
             InterCodes codes3 = translate_Stmt(second_stmt, tables, depth);
+
             InterCode code_label1 = createInterCode_LABEL(label1);
             InterCode code_label2 = createInterCode_LABEL(label2);
             InterCode code_label3 = createInterCode_LABEL(label3);
             InterCode goto_label3 = createInterCode_UNARY(label3, I_GOTO);
+            addInterCode(codes1, code_label1);
+            addInterCode(codes2, goto_label3);
+            addInterCode(codes2, code_label2);
+            addInterCode(codes3, code_label3);
             //return codes1 + code_label1 + codes2 + goto_label3 + code_label2 + codes3 + code_label3;
+            addInterCodesAsChild(codes, codes1);
+            addInterCodesAsChild(codes, codes2);
+            addInterCodesAsChild(codes, codes3);
         }
         
     }
