@@ -177,13 +177,13 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
 InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false, RBRoot* tables[], int depth)
 {
     assert(expr != NULL);
-    
+    InterCodes codes = initNewInterCodes();
     if(expr->child->type_no == Expr)
     {
         T* expr1 = expr->child;
         T* op = expr1->r_brother;
-        T* expr2 = op->r_brother;
 
+        T* expr2 = op->r_brother;
         switch (op->type_no)
         {
         //比较运算符
@@ -203,7 +203,6 @@ InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false,
             InterCode code_goto_false = createInterCode_UNARY(label_false, I_GOTO);
             addInterCode(codes2, code_ifgoto);
             addInterCode(codes2, code_goto_false);
-            InterCodes codes = initNewInterCodes();
             addInterCodesAsChild(codes, codes1);
             addInterCodesAsChild(codes, codes2);
             manage_temp(FREE_TEMP, t2);
@@ -228,7 +227,6 @@ InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false,
             Operand label1 = createOperand_INT(OP_LABEL, l1, NULL);
             InterCodes codes1 = translate_Condition(expr1, label_true, label1, tables, depth);
             InterCodes codes2 = translate_Condition(expr2, label_true, label_false, tables, depth);
-            InterCodes codes = initNewInterCodes();
             InterCode code_label1 = createInterCode_LABEL(label1);
             addInterCode(codes1, code_label1);
             addInterCodesAsChild(codes, codes1);
@@ -241,6 +239,22 @@ InterCodes translate_Condition(T* expr, Operand label_true, Operand label_false,
         }
 
     }
+    else //只有一个expr, 通过这个expr的值来判断是否跳转
+    {
+        int t1 = manage_temp(GET_TEMP, 0);
+        Operand temp1 = createOperand_INT(OP_TEMP, t1, NULL);
+        Operand temp2 = createOperand_INT(OP_CONST, 0, NULL);
+        InterCodes codes1 = translate_Exp(expr, tables, depth, temp1);
+        InterCode code_ifgoto = createInterCode_IFGOTO(temp1, temp2, label_true, OP_NEQ);
+        InterCode code_goto_false = createInterCode_UNARY(label_false, I_GOTO);
+        addInterCode(codes1, code_ifgoto);
+        addInterCode(codes1, code_goto_false);
+        InterCodes codes = initNewInterCodes();
+        addInterCodesAsChild(codes, codes1);
+        manage_temp(FREE_TEMP, t1);
+        return codes;   
+    }
+    
     return NULL;
 }
 
@@ -296,13 +310,13 @@ InterCodes translate_Stmt(T* stmt, RBRoot* tables[], int depth)
             InterCodes codes2 = translate_Stmt(first_stmt, tables, depth);
             InterCode code_label1 = createInterCode_LABEL(label1);
             InterCode code_label2 = createInterCode_LABEL(label2);
-            printf("\n\n");
-            PrintInterCodes(codes1);
-            printf("\n\n");
+            //printf("\n\n");
+            //PrintInterCodes(codes1);
+            //printf("\n\n");
             addInterCode(codes1, code_label1);
-            printf("\n\n");
-            PrintInterCodes(codes1);
-            printf("\n\n");
+            //printf("\n\n");
+            //PrintInterCodes(codes1);
+            //printf("\n\n");
             addInterCode(codes2, code_label2);
 
             addInterCodesAsChild(codes, codes1);

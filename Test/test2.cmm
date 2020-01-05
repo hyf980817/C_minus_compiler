@@ -1,8 +1,10 @@
 int main(){
 	int a = 3;
-	if(a == 3)
-		a = a/3;
-	else
-		a = a*3;
+
+	if( a && 3)
+		a = a+3;
+
+	if(a || 3)
+		a = a - 3;
 
 }
