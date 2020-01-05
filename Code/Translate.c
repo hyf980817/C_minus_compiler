@@ -67,11 +67,42 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
             //函数调用
             T* fundec = child;
             T* lp = child->r_brother;
-            InterCode code_call = createInterCode_CALL(fundec->child->id);
-            if(lp->r_brother->type_no == RP)
+            if(lp->r_brother->type_no != RP) //有参数, 先计算参数
             {
-
+                T* args = lp->r_brother;
+                int t_start = -1; //存储获取的temp寄存器, 方便后面释放
+                int t_end = -1;
+                InterCodes codes_args = initNewInterCodes();
+                while(args != NULL)
+                {
+                    T* expr = args->child;
+                    int t = manage_temp(GET_TEMP, 0); //获取存储结果的temp寄存器
+                    if(t_start == -1)
+                        t_start = t;
+                    t_end = t;
+                    Operand temp = createOperand_INT(OP_TEMP, t, NULL);
+                    //翻译参数的expr
+                    InterCodes codes_expr = translate_Exp(expr, tables, depth, temp);
+                    addInterCodesAsChild(codes, codes_expr);
+                    //创建ARG语句
+                    InterCode code_arg = createInterCode_UNARY(temp, I_ARG);
+                    addInterCode(codes_args, code_arg);
+                    //准备读取下一个arg  Args->Expr COMMA Args
+                    args = args->r_brother;
+                    if(args != NULL)
+                    {
+                        args = args->r_brother;
+                    }
+                }
+                
+                for(int i = t_start; i <= t_end; i++) {
+                    manage_temp(FREE_TEMP, i);
+                }
+                addInterCodesAsChild(codes, codes_args);
             }
+            
+            InterCode code_function = createInterCode_CALL(place, fundec->id);
+            addInterCode(codes, code_function);
             break;
         default:
             break;

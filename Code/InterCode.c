@@ -53,10 +53,11 @@ InterCode createInterCode_FUNDEF(char *name, int return_type)
     return code;
 }
 
-InterCode createInterCode_CALL(char *name)
+InterCode createInterCode_CALL(Operand result, char *name)
 {
     InterCode code = (InterCode)malloc(sizeof(struct InterCode_));
     code->kind = I_CALL;
+    code->call.result = result;
     code->call.name = name;
     code->next = NULL;
     return code;
@@ -70,6 +71,8 @@ InterCode createInterCode_PARAM(Operand param)
     code->next = NULL;
     return code;
 }
+
+
 
 InterCode createInterCode_LABEL(Operand label)
 {
@@ -197,10 +200,23 @@ void printInterCode(InterCode code)
         printf("\n");
         break;
     case I_FUNDEF:
-        printf("Function %s : \n", code->fundef.name);
+        printf("\nFunction %s : \n", code->fundef.name);
         break;
     case I_PARAM:
         printf("PARAM %s\n", code->param.op->name);
+        break;
+    case I_ARG:
+        printf("ARG ");
+        printOperand(code->unary.op);
+        printf("\n");
+        break;
+    case I_CALL:
+        if(code->call.result == NULL)
+            printf("CALL Function %s\n", code->call.name);
+        else{
+            printOperand(code->call.result);
+            printf(" := CALL Function %s\n", code->call.name);
+        }
         break;
     case I_RETURN:
         printf("Return t%d\n", code->unary.op->int_val);

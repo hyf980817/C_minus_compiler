@@ -133,7 +133,7 @@ struct InterCode_
         struct {Operand op;} unary;  //I_GOTO, I_RETURN, I_ARG
         struct {Operand left, right, label; int relop;} ifgoto;  //I_IFGOTO
         struct {char *name; int return_type;} fundef;
-        struct {char *name; int return_type;} call;
+        struct {Operand result; char *name;} call;
         struct {Operand op;} param;
         struct {Operand op;} label;
 
@@ -160,7 +160,7 @@ InterCode createInterCode_ASSIGN(Operand src, Operand dst);
 InterCode createInterCode_BINOP(Operand dst, Operand src1, Operand src2, int code_type, int op_type);
 InterCode createInterCode_UNARY(Operand op, int type);
 InterCode createInterCode_FUNDEF(char *name, int return_type);
-InterCode createInterCode_CALL(char *name);
+InterCode createInterCode_CALL(Operand result, char *name);
 InterCode createInterCode_PARAM(Operand param);
 InterCode createInterCode_LABEL(Operand label);
 InterCode createInterCode_IFGOTO(Operand left, Operand right, Operand label, int relop);
