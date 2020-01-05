@@ -10,12 +10,17 @@
 	/Lab
         /.vscode
         launch.json
+		setting.json
 	    /Code
 		Makefile
 		lexical.l
 		syntax.y
-		main.c
-		  .
+		Tree.h
+		InterCode.c
+		InterCode.h
+		rbtree.c
+		Translate.c
+		InterCode_test.c
 		  .
 	    /Test
 		test1.cmm

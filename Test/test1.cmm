@@ -4,4 +4,7 @@ int main()
 {
     int a;
     b = a+3;
+    if(a > 0)
+        a = a + 3;
+    return b;
 }

@@ -1,6 +1,3 @@
-# GNU make手册：http://www.gnu.org/software/make/manual/make.html
-# ************ 遇到不明白的地方请google以及阅读手册 *************
-
 # 编译器设定和编译选项
 CC = gcc
 FLEX = flex
@@ -18,10 +15,10 @@ LFO = $(LFC:.c=.o)
 YFO = $(YFC:.c=.o)
 
 parser: syntax-c lexical
-	$(CC) -o parser $(YFC) rbtree.c -lfl -ly
+	$(CC) -o parser $(YFC) rbtree.c Translate.c InterCode.c -lfl -ly
 
 parser-debug: syntax-c-debug lexical
-	$(CC) -o parser $(YFC) rbtree.c -lfl -ly -g
+	$(CC) -o parser $(YFC) rbtree.c Translate.c InterCode.c -lfl -ly -g
 
 syntax: lexical syntax-c
 	$(CC) -c $(YFC) -o $(YFO)
@@ -36,14 +33,23 @@ syntax-c: $(YFILE)
 syntax-c-debug: $(YFILE)
 	$(BISON) -o $(YFC) -d -v -t $(YFILE)
 
+
+intercodeTest: 
+	$(CC) -o intercode_test InterCode.c InterCode_test.c rbtree.c
+
+intercodeTest-debug: 
+	$(CC) -o -g intercode_test InterCode.c InterCode_test.c rbtree.c
 -include $(patsubst %.o, %.d, $(OBJS))
 
 # 定义的一些伪目标
-.PHONY: clean test
+.PHONY: clean test count
 test:
 	./parser ../Test/test1.cmm
 clean:
-	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output parser.tree
+	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output parser.tree intercode_test
 	rm -f $(OBJS) $(OBJS:.o=.d)
 	rm -f $(LFC) $(YFC) $(YFC:.c=.h)
 	rm -f *~
+
+count: clean
+	wc -l *.l *.y *.c *.h

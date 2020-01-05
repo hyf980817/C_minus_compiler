@@ -1,6 +1,9 @@
-/*测试不规范的命名*/
+/*测试while翻译*/
 int main2()
 {
-    int _wrong;
-    return 1;
+    int a = 3;
+    while(a > 1)
+        a = a - 1;
+
+    return a;
 }

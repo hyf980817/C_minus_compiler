@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "typeinfo": "c",
+        "assert.h": "c",
+        "syntax.tab.h": "c",
+        "intercode.h": "c",
+        "tree.h": "c",
+        "limits": "c"
+    }
+}
