@@ -10,12 +10,17 @@
 	/Lab
         /.vscode
         launch.json
+		setting.json
 	    /Code
 		Makefile
 		lexical.l
 		syntax.y
-		main.c
-		  .
+		Tree.h
+		InterCode.c
+		InterCode.h
+		rbtree.c
+		Translate.c
+		InterCode_test.c
 		  .
 	    /Test
 		test1.cmm
@@ -25,7 +30,7 @@
 	    /README
 
 Code目录：	1. 用于存放所有flex，bison，C语言源文件和头文件以及Makefile；
-		   2. 使用make parser-debug或make parser来生成实习一的parser.
+		   2. 使用make parser-debug或make parser来生成parser.
 	
 Test目录：	1. 用于存放测试文件（如果有输出文件的话）；
 		2. 测试文件以".cmm"作为后缀名。
