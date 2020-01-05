@@ -355,6 +355,37 @@ InterCodes translate_Stmt(T* stmt, RBRoot* tables[], int depth)
         
     }
 
+    if(child->type_no == WHILE)  //while循环
+    {
+        T* expr = child->r_brother->r_brother;
+        T* stmt = expr->r_brother->r_brother;
+        int l1 = manage_label();
+        int l2 = manage_label();
+        int l3 = manage_label();
+        Operand label_start = createOperand_INT(OP_LABEL, l1, NULL);
+        Operand label_loop = createOperand_INT(OP_LABEL, l2, NULL);
+        Operand label_end = createOperand_INT(OP_LABEL, l3, NULL);
+        InterCodes codes_expr = translate_Condition(expr, label_loop, label_end, tables, depth);
+        InterCodes codes_stmt = translate_Stmt(stmt, tables, depth);
+        InterCodes codes_start = initNewInterCodes();
+
+        InterCode code_label_start = createInterCode_UNARY(label_start, I_LABEL);
+        InterCode code_label_loop = createInterCode_UNARY(label_loop, I_LABEL);
+        InterCode code_label_end = createInterCode_UNARY(label_end, I_LABEL);
+        InterCode code_goto_start = createInterCode_UNARY(label_start, I_GOTO);
+
+        addInterCode(codes_start, code_label_start);
+        addInterCodesAsChild(codes, codes_start);
+        
+        addInterCode(codes_expr, code_label_loop);
+        addInterCode(codes_stmt, code_goto_start);
+        addInterCode(codes_stmt, code_label_end);
+        
+        addInterCodesAsChild(codes, codes_expr);
+        addInterCodesAsChild(codes, codes_stmt);
+
+        
+    }
     return codes;
 }
 
