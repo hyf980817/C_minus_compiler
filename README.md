@@ -45,3 +45,8 @@ Test目录：
 - args为运行时输入的参数
 - 在Code目录下执行make parser-debug
 - VS code下按F5即可开始调试
+
+测试:
+- Code目录下执行make parser
+- Code目录下执行: ./parser \[测试文件路径\]
+	如: ./parser ../Test/test1.cmm
