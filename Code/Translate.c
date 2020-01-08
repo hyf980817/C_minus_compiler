@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 InterCodes translate_block(T* block, RBRoot* tables[], int depth);
-
+InterCodes translate_Exp(T* expr, RBRoot* tables[], int depth, Operand place);
 //管理temp类型的寄存器, 可以获取或者释放
 int manage_temp(int mode, int no)
 {
@@ -39,6 +39,48 @@ int manage_label()
     return label;
 }
 
+
+InterCodes translate_Array(T* id, RBRoot* tables[], int depth, Operand place)
+{
+    Node *id_node = search_tables(id->id, tables, depth); //找到符号表中这个id
+    symbol value = id_node->value;  
+
+
+    //int dimension = value.array[0];   //数组维度
+    //assert(dimension != 0);
+
+    int t1 = manage_temp(GET_TEMP, 0);
+    int t2 = manage_temp(GET_TEMP, 0);
+    Operand temp1 = createOperand_INT(OP_TEMP, t1, NULL);
+    Operand temp2 = createOperand_INT(OP_TEMP, t2, NULL);
+    Operand four = createOperand_INT(OP_CONST, 4, NULL);
+    Operand var = createOperand_INT(OP_VAR, 0, id->id);
+
+    T* expr = id->r_brother->r_brother;
+    assert(expr->type_no == Expr);
+    //计算索引大小
+    InterCodes codes_index = translate_Exp(expr, tables, depth, temp1);
+    
+    //索引乘以4
+    InterCode code_four = createInterCode_BINOP(temp2, temp1, four, I_BINOP, OP_STAR);
+    //基址
+    InterCode code_base = createInterCode_ASSIGN(var, temp1);
+    //索引加基址
+    InterCode code_addr = createInterCode_BINOP(temp1, temp1, temp2, I_BINOP, OP_ADD);
+
+    //解引用
+    InterCode code_deref = createInterCode_ASSIGN(temp1,place);
+    code_deref->kind = I_DEREF;
+
+    addInterCode(codes_index, code_four);
+    addInterCode(codes_index, code_base);
+    addInterCode(codes_index, code_addr);
+    addInterCode(codes_index, code_deref);
+    manage_temp(FREE_TEMP, t1);
+    manage_temp(FREE_TEMP, t2);
+    return codes_index;
+}
+
 //翻译表达式
 InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
 {
@@ -57,7 +99,7 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
             addInterCode(codes, code);
             break;
         case ID:
-            if(child->r_brother == NULL)
+            if(child->r_brother == NULL) //纯ID
             {
                 op = createOperand_INT(OP_VAR, 0, child->id);
                 InterCode code = createInterCode_ASSIGN(op, place);
@@ -65,52 +107,57 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
                 break;
             }
             //函数调用
-            T* fundec = child;
-            T* lp = child->r_brother;
-            if(lp->r_brother->type_no != RP) //有参数, 先计算参数
+            if(child->r_brother->type_no == LP)
             {
-                T* args = lp->r_brother;
-                int t_start = -1; //存储获取的temp寄存器, 方便后面释放
-                int t_end = -1;
-                InterCodes codes_args = initNewInterCodes();
-                while(args != NULL)
+                T* fundec = child;
+                T* lp = child->r_brother;
+                if(lp->r_brother->type_no != RP) //有参数, 先计算参数
                 {
-                    T* expr = args->child;
-                    int t = manage_temp(GET_TEMP, 0); //获取存储结果的temp寄存器
-                    if(t_start == -1)
-                        t_start = t;
-                    t_end = t;
-                    Operand temp = createOperand_INT(OP_TEMP, t, NULL);
-                    //翻译参数的expr
-                    InterCodes codes_expr = translate_Exp(expr, tables, depth, temp);
-                    addInterCodesAsChild(codes, codes_expr);
-                    //创建ARG语句
-                    InterCode code_arg = createInterCode_UNARY(temp, I_ARG);
-                    addInterCode(codes_args, code_arg);
-                    //准备读取下一个arg  Args->Expr COMMA Args
-                    args = args->r_brother;
-                    if(args != NULL)
+                    T* args = lp->r_brother;
+                    int t_start = -1; //存储获取的temp寄存器, 方便后面释放
+                    int t_end = -1;
+                    InterCodes codes_args = initNewInterCodes();
+                    while(args != NULL)
                     {
+                        T* expr = args->child;
+                        int t = manage_temp(GET_TEMP, 0); //获取存储结果的temp寄存器
+                        if(t_start == -1)
+                            t_start = t;
+                        t_end = t;
+                        Operand temp = createOperand_INT(OP_TEMP, t, NULL);
+                        //翻译参数的expr
+                        InterCodes codes_expr = translate_Exp(expr, tables, depth, temp);
+                        addInterCodesAsChild(codes, codes_expr);
+                        //创建ARG语句
+                        InterCode code_arg = createInterCode_UNARY(temp, I_ARG);
+                        addInterCode(codes_args, code_arg);
+                        //准备读取下一个arg  Args->Expr COMMA Args
                         args = args->r_brother;
+                        if(args != NULL)
+                        {
+                            args = args->r_brother;
+                        }
                     }
+                    
+                    for(int i = t_start; i <= t_end; i++) {
+                        manage_temp(FREE_TEMP, i);
+                    }
+                    addInterCodesAsChild(codes, codes_args);
                 }
                 
-                for(int i = t_start; i <= t_end; i++) {
-                    manage_temp(FREE_TEMP, i);
-                }
-                addInterCodesAsChild(codes, codes_args);
+                InterCode code_function = createInterCode_CALL(place, fundec->id);
+                addInterCode(codes, code_function);
             }
-            
-            InterCode code_function = createInterCode_CALL(place, fundec->id);
-            addInterCode(codes, code_function);
+            if(child->r_brother->type_no == LB) //数组
+            {
+                codes = translate_Array(child, tables, depth,place);
+            }
             break;
         default:
             break;
         }
-
-
-
     }
+
     if(child->type[0] == 'E')  //二元运算或数组   Expr-> Expr OP_XXXX Expr   || Expr-> Expr LB Expr RB
     {
         //printf("In Expr\n");
@@ -119,6 +166,7 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
         assert(Expr1->type_no == Expr);
         assert(OP->type[0] == 'O'); //目前暂时不考虑数组
         T* Expr2 = OP->r_brother;
+
         //赋值表达式的翻译
         if(OP->type_no == OP_ASSIGN)
         {
@@ -144,7 +192,6 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
             manage_temp(FREE_TEMP, t1); //释放temp寄存器
             
         }
-
         //二元操作的翻译
         if(OP->type_no >= OP_STAR && OP->type_no <=OP_BIT_OR)
         {
@@ -168,10 +215,9 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
             manage_temp(FREE_TEMP, t1);
             manage_temp(FREE_TEMP, t2);
         }
-
-        
         
     }
+
     if(child->type[0] == 'O') //一元运算
     {
         switch (child->type_no)

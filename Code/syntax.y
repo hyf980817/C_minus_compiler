@@ -164,7 +164,7 @@ Expr : Expr OP_ASSIGN Expr     {$$ = initTreeNode(yytname[yyr1[yyn]], Expr); ins
     | CHAR     {$$ = initTreeNode(yytname[yyr1[yyn]], Expr); insertChild($$, 1, $1);}
     | ID LP Args RP     {$$ = initTreeNode(yytname[yyr1[yyn]], Expr); insertChild($$, 4, $1, $2, $3, $4);}
     | ID LP RP     {$$ = initTreeNode(yytname[yyr1[yyn]], Expr); insertChild($$, 3, $1, $2, $3);}
-    | Expr LB Expr RB     {$$ = initTreeNode(yytname[yyr1[yyn]], Expr); insertChild($$, 4, $1, $2, $3, $4);}
+    | ID LB Expr RB     {$$ = initTreeNode(yytname[yyr1[yyn]], Expr); insertChild($$, 4, $1, $2, $3, $4);}
     ;
 
 

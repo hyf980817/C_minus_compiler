@@ -121,10 +121,7 @@ InterCode createInterCode_UNARY(Operand op, int type)
     return code; 
 }
 
-InterCode createInterCode_FunDef()
-{
 
-}
 
 //打印一个操作数
 void printOperand(Operand op)
@@ -156,6 +153,12 @@ void printInterCode(InterCode code)
         printOperand(code->assign.right);
         printf("\n");
         break;
+    case I_DEREF:
+        printOperand(code->assign.left);
+        printf(" := *");
+        printOperand(code->assign.right);
+        printf("\n");
+        break;        
     case I_GOTO:
         printf("GOTO Label%d\n", code->unary.op->no_val);
         break;
@@ -221,6 +224,7 @@ void printInterCode(InterCode code)
     case I_RETURN:
         printf("Return t%d\n", code->unary.op->int_val);
         break;
+
     case I_LABEL:
         printf("LABEL %d:\n", code->label.op->int_val);
         break;

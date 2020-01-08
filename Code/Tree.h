@@ -79,7 +79,8 @@ void print_rbtree(RBRoot *root);
 
 int pushNewSymbolTable(RBRoot* s[], int old_depth, RBRoot *r);
 
-
+//查找整个符号表栈
+Node* search_tables(KeyType id, RBRoot *tables[], int depth);
 /**************************************语法树的定义**************************************/
 
 enum {Program = 2048, DefList, VarDefStmt, FunDef, VarDecList, TYPE, VarDec, FunDec, ParaList, ParaDec, BLOCK, VarDefStmtList, SentenceList, Sentence, Stmt, Expr, Args} NonTerminals;
@@ -121,8 +122,11 @@ struct Operand_ {
         char char_val;
         int no_val;
     };
+    int type; //操作数类型
+    int *arrays; //指向symbol中的数组维度信息
     char *name;
 };
+
 
 typedef struct Operand_* Operand;
 
@@ -130,7 +134,7 @@ typedef struct Operand_* Operand;
 //单条指令, 但是next指针可以指向这条指令的下一条指令, 所以事实上能表示一串指令
 struct InterCode_
 {
-    enum {I_ASSIGN = 8192, I_BINOP, I_GOTO, I_IFGOTO, I_FUNDEF, I_CALL, I_ARG, I_PARAM, I_LABEL, I_RETURN} kind;
+    enum {I_ASSIGN = 8192, I_BINOP, I_GOTO, I_IFGOTO, I_FUNDEF, I_CALL, I_ARG, I_PARAM, I_LABEL, I_RETURN, I_DEREF} kind;
     union 
     {
         struct {Operand right, left;} assign; //I_ASSIGN, I_CALL

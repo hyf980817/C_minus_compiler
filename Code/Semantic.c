@@ -6,28 +6,17 @@ void Block_Analysis(T* block, RBRoot *tables[], int depth);
 void Stmt_Analysis(T* stmt, RBRoot *tables[], int depth);
 
 
-Node* search_tables(char *id, RBRoot *tables[], int depth)
-{
-    Node *id_node;
-    for(int i = depth; i >= 0; i--)
-    {
-        id_node = search(tables[i]->node, id);
-        if(id_node != NULL)
-            break;
-    }
-    return id_node;
-}
 
 void Expr_Analysis(T* expr, RBRoot *tables[], int depth)
 {
     switch (expr->child->type_no)
     {
-    case ID: {//有可能是变量,有可能是函数调用{
+    case ID: {//有可能是变量,有可能是函数调用, 还可能是数组
         T* id = expr->child;
         Node* id_node = search_tables(id->id, tables, depth);
         if(id_node == NULL)
             printf("Semantic Error:Unknown id in line %d : %s\n", id->lineno, id->id);
-        if(id->r_brother != NULL) //函数调用还需要分析参数
+        if(id->r_brother != NULL && id->r_brother->type_no == LP) //函数调用还需要分析参数
         {
             T* lp = id->r_brother;
             //T* fundef_id = (T*)id_node->value.syntaxTreeNode; //调用的函数的定义在语法树上的位置.
@@ -45,6 +34,13 @@ void Expr_Analysis(T* expr, RBRoot *tables[], int depth)
             }
             
         }
+        else if(id->r_brother != NULL && id->r_brother->type_no == LB) //数组
+        {
+            T* lb = id->r_brother;
+            //T* fundef_id = (T*)id_node->value.syntaxTreeNode; //调用的函数的定义在语法树上的位置.
+            T* expr1 = lb->r_brother;
+            Expr_Analysis(expr1, tables, depth);  //分析每个参数          
+        }
         break;
     }
     case LP:{ //Expr -> LP Expr RP
@@ -61,13 +57,26 @@ void Expr_Analysis(T* expr, RBRoot *tables[], int depth)
         //如果是赋值表达式, 左边必须是ID,或者数组
         if(op->type_no == OP_ASSIGN)
         {
-            if(expr1->child->type_no != ID ||(expr1->child->r_brother != NULL && expr1->child->r_brother->type_no != LB))
+            T* child = expr1->child;
+            if(child->type_no != ID)
             {
-                T* temp = expr1->child;
-                while(expr1->child->type_no == Expr)
-                    expr1 = expr1->child;
-                printf("Semantic Error in line %d : invalid left value\n", expr1->lineno);
+                while(child->type_no == Expr)
+                    child = child->child;
+                printf("Semantic Error in line %d : invalid left value\n", child->lineno);
             }
+            else if(child->type_no == ID && child->r_brother != NULL && child->r_brother->type_no == LB) //是数组
+            {
+                Node* id_node = search_tables(expr1->child->id, tables, depth);
+                assert(id_node != NULL);
+                symbol value = id_node->value;
+
+                if(value.array[0] == 0) //这个变量并不是数组
+                {
+                    printf("Semantic Error in line %d : invalid array name\n", expr1->child->lineno);
+                }
+            }
+            
+
         }
 
         //然后分别分析两个expr:

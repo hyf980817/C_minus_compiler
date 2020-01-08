@@ -986,3 +986,16 @@ void addSymbolTable(T* root)
     }
 
 }
+
+//查找整个表
+Node* search_tables(KeyType id, RBRoot *tables[], int depth)
+{
+    Node *id_node;
+    for(int i = depth; i >= 0; i--)
+    {
+        id_node = search(tables[i]->node, id);
+        if(id_node != NULL)
+            break;
+    }
+    return id_node;
+}

@@ -8,6 +8,8 @@ struct Operand_ {
         char char_val;
         int no_val;
     };
+    int type; //操作数类型
+    int *arrays; //指向symbol中的数组维度信息
     char *name;
 };
 
@@ -17,7 +19,7 @@ typedef struct Operand_* Operand;
 //单条指令, 但是next指针可以指向这条指令的下一条指令, 所以事实上能表示一串指令
 struct InterCode_
 {
-    enum {I_ASSIGN = 8192, I_BINOP, I_GOTO, I_IFGOTO, I_FUNDEF, I_CALL, I_ARG, I_PARAM, I_LABEL, I_RETURN} kind;
+    enum {I_ASSIGN = 8192, I_BINOP, I_GOTO, I_IFGOTO, I_FUNDEF, I_CALL, I_ARG, I_PARAM, I_LABEL, I_RETURN, I_DEREF} kind;
     union 
     {
         struct {Operand right, left;} assign; //I_ASSIGN, I_CALL

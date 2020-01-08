@@ -1,10 +1,12 @@
 /*测试数组*/  
 int main()
 {
-    int c = 3;
+
     int d[12];
-    int a = 4;
-    a = a + 4;
-    return -a;
+    int a = 2,b;
+    if(a == 4)
+        a = a + 3;
+    b = d[a];
+    return b;
 
 }
