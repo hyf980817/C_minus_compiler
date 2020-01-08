@@ -239,12 +239,12 @@ void printTree(T* root, int level, FILE *f)
     else
         fprintf(f,"%s\n", root->type);
 
-    if(strcmp(root->type, "Program") == 0 || strcmp(root->type, "BLOCK") == 0)
-    {
-        printf("\n%s SymbolTable:\n", root->type);
-        print_rbtree(root->table);
-        printf("\nend of SymbolTable:\n");
-    }
+    // if(strcmp(root->type, "Program") == 0 || strcmp(root->type, "BLOCK") == 0)
+    // {
+    //     printf("\n%s SymbolTable:\n", root->type);
+    //     print_rbtree(root->table);
+    //     printf("\nend of SymbolTable:\n");
+    // }
     T* child = root->child;
     while(child != NULL)
     {
@@ -275,11 +275,13 @@ int main(int argc, char** argv)
     if(!ERROR)
     {
         addSymbolTable(TreeRoot); //符号表
-        //printTree(TreeRoot, 0, f1);
+        printTree(TreeRoot, 0, f1);
+        Semantic_Analysis(TreeRoot);
+        freopen("out.txt", "w",stdout);
+        InterCodes codes = translate_Program(TreeRoot); //中间代码生成
+        PrintInterCodes(codes);
     }
-    freopen("out.txt", "w",stdout);
-    InterCodes codes = translate_Program(TreeRoot); //中间代码生成
-    PrintInterCodes(codes);
+
 
     return 0;
 }

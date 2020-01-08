@@ -72,7 +72,8 @@ void postorder_rbtree(RBRoot *root);
 int rbtree_search(RBRoot *root, KeyType key);
 // (非递归实现)查找"红黑树"中键值为key的节点。找到的话，返回0；否则，返回-1。
 int iterative_rbtree_search(RBRoot *root, KeyType key);
-
+// 递归search, 如果找到, 返回对应的Node.
+Node* search(RBTree x, KeyType key);
 // 打印红黑树
 void print_rbtree(RBRoot *root);
 
@@ -93,6 +94,7 @@ typedef struct T {
     char *type;
     int type_no;  
     char *id;
+    int lineno;
     RBRoot *table;
     struct T* child;
     struct T* l_brother;
@@ -104,6 +106,9 @@ void insertChild(T* root, int n , ...);
 void insertBrotherToRight(T* root, T* newnode);
 
 void addSymbolTable(T* root);
+
+/**************************************语义分析的定义**************************************/
+void Semantic_Analysis(T* root);
 
 
 /**************************************中间代码翻译的定义**************************************/

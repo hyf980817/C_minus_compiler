@@ -101,7 +101,7 @@ void postorder_rbtree(RBRoot *root)
 /*
  * (递归实现)查找"红黑树x"中键值为key的节点
  */
-static Node* search(RBTree x, KeyType key)
+Node* search(RBTree x, KeyType key)
 {
     //if (x==NULL || x->key==key)
     if (x==NULL || strcmp(x->key, key) == 0)
@@ -118,6 +118,7 @@ int rbtree_search(RBRoot *root, KeyType key)
     if (root)
         return search(root->node, key)? 0 : -1;
 }
+
 
 /*
  * (非递归实现)查找"红黑树x"中键值为key的节点
