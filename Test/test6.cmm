@@ -6,11 +6,12 @@ int fun1(int x)
 
 int fun2(int y)
 {
-    return y-1;
+    return 1;
 }
 
 int main()
 {
     int x = 3;
+    3 = y;
     return fun1(fun2(z*4));
 }

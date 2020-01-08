@@ -3,11 +3,8 @@ int main()
 {
     int c = 3;
     int d[12];
+    int a = 4;
+    a = a + 4;
+    return -a;
 
-    while(c < a) {
-        c = c+1;
-        d[c] = d[1] - 1;
-    }
-
-    return d;
 }

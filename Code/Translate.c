@@ -145,7 +145,7 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
             
         }
 
-        //Expr1 + Expr2的翻译
+        //二元操作的翻译
         if(OP->type_no >= OP_STAR && OP->type_no <=OP_BIT_OR)
         {
             //printf("In OP\n");
@@ -168,7 +168,31 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
             manage_temp(FREE_TEMP, t1);
             manage_temp(FREE_TEMP, t2);
         }
+
         
+        
+    }
+    if(child->type[0] == 'O') //一元运算
+    {
+        switch (child->type_no)
+        {
+        case OP_SUB:{  //负数
+            int t1 = manage_temp(GET_TEMP, 0);
+            Operand temp1 = createOperand_INT(OP_TEMP, t1, NULL);
+            Operand zero = createOperand_INT(OP_CONST, 0, NULL);
+
+            codes = translate_Exp(child->r_brother, tables, depth, temp1);
+            if(place != NULL)
+            {
+                InterCode c1 = createInterCode_BINOP(place, zero, temp1, I_BINOP, OP_SUB);
+                addInterCode(codes, c1);
+            }
+            manage_temp(FREE_TEMP, t1);
+            break;
+        }
+        default:
+            break;
+        }
     }
     return codes;
 }
