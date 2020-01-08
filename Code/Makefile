@@ -46,7 +46,7 @@ intercodeTest-debug:
 test:
 	./parser ../Test/test1.cmm
 clean:
-	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output parser.tree intercode_test
+	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output parser.tree intercode_test out.txt
 	rm -f $(OBJS) $(OBJS:.o=.d)
 	rm -f $(LFC) $(YFC) $(YFC:.c=.h)
 	rm -f *~

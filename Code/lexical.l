@@ -24,8 +24,9 @@ digits [0-9]+
 
 
 %%
-
+ /*空白符*/
 (" "|"\t")+     {;}
+ /*注释*/
 "/*"(.)*"*/"  {;}
 \n            {yycolumn = 1;}
     /*类型*/
@@ -94,7 +95,7 @@ continue        {yylval = initTreeNode("CONTINUE", CONTINUE); return CONTINUE;}
 
 
 
-.           {fprintf(stdout, "Error at line %d, unknown token:%c", yylineno, yytext[0]);}
+.           {fprintf(stderr, "Error at line %d column %d, unknown token:%c\n", yylineno, yycolumn,yytext[0]);}
 
 
 %%

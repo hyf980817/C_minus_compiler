@@ -33,6 +33,7 @@
 
 
 %right OP_ASSIGN
+%left OP_AND OP_OR
 %left OP_BIT_OR
 %left OP_BIT_XOR
 %left OP_BIT_AND
@@ -115,7 +116,7 @@ SentenceList : Sentence SentenceList     {$$ = initTreeNode(yytname[yyr1[yyn]], 
     ;
 
 
- /*Stmt: 语句, 分为定义语句和陈述语句*/
+ /*Stmt: 陈述语句*/
 Sentence : Stmt     {$$ = initTreeNode(yytname[yyr1[yyn]], Sentence); insertChild($$, 1, $1);}
     | error SEMI {$$ = initTreeNode(yytname[yyr1[yyn]], Sentence);}
     | error {$$ = initTreeNode(yytname[yyr1[yyn]], Sentence);}
@@ -273,11 +274,12 @@ int main(int argc, char** argv)
     FILE* f1 = fopen("parser.tree", "w");
     if(!ERROR)
     {
-        addSymbolTable(TreeRoot);
-        printTree(TreeRoot, 0, f1);
+        addSymbolTable(TreeRoot); //符号表
+        //printTree(TreeRoot, 0, f1);
     }
-
-    InterCodes codes = translate_Program(TreeRoot);
+    freopen("out.txt", "w",stdout);
+    InterCodes codes = translate_Program(TreeRoot); //中间代码生成
     PrintInterCodes(codes);
+
     return 0;
 }
