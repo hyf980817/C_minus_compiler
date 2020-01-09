@@ -1,4 +1,4 @@
-/*测试函数调用(少一个括号)*/
+/*测试函数调用*/
 int fun1(int x)
 {
     return x+1;
@@ -12,5 +12,5 @@ int fun2(float y)
 int main()
 {
     int x = 3;
-    return fun1(fun2(x*4);
+    return fun1(fun2(x*4));
 }

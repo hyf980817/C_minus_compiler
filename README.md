@@ -4,7 +4,7 @@
 - 本项目大体上是跟随南京大学许畅老师的编译原理课程的实习项目要求.
 	原网页: https://cs.nju.edu.cn/changxu/2_compiler/index.html
 - 本项目的代码仅供参考.
-
+- 环境: Ubuntu 18.04. 要求安装gcc,flex,bison.
 
 # 文件结构
 	/Lab
@@ -50,3 +50,8 @@ Test目录：
 - Code目录下执行make parser
 - Code目录下执行: ./parser \[测试文件路径\]
 	如: ./parser ../Test/test1.cmm
+
+输入和输出:
+- 调用程序时第一个参数即为输入程序的路径 如: ./parser ../Test/test1.cmm
+- 如果有错误,会直接输出到控制台
+- 如果无错误, 语法树打印结果输出到parser.tree文件中, 中间代码翻译结果输出到out.txt中

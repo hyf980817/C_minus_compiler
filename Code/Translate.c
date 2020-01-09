@@ -39,7 +39,7 @@ int manage_label()
     return label;
 }
 
-
+//翻译数组
 InterCodes translate_Array(T* id, RBRoot* tables[], int depth, Operand place)
 {
     Node *id_node = search_tables(id->id, tables, depth); //找到符号表中这个id
@@ -171,7 +171,7 @@ InterCodes translate_Exp(T* Exp, RBRoot* tables[], int depth, Operand place)
         if(OP->type_no == OP_ASSIGN)
         {
             //printf("In OP_ASSIGN\n");
-            int t1 = manage_temp(GET_TEMP, 0);
+            int t1 = manage_temp(GET_TEMP, 0);  //获取一个temp寄存器
             Operand temp1 = createOperand_INT(OP_TEMP, t1, NULL);
             Operand variable = createOperand_INT(OP_VAR, 0, Expr1->child->id);
             

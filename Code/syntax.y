@@ -54,7 +54,7 @@
 Program : DefList  {$$ = initTreeNode(yytname[yyr1[yyn]], Program); insertChild($$, 1, $1); TreeRoot = $$;}   
     ;
 
- /*DefList: 定义声明串, 由0个或多个DefDec(定义声明)组成*/
+ /*DefList: 定义串*/
 DefList :  /*empty*/ {$$ = initTreeNode(yytname[yyr1[yyn]],DefList); }
     | VarDefStmt DefList {$$ = initTreeNode(yytname[yyr1[yyn]], DefList); insertChild($$, 2, $1, $2);}
     | FunDef DefList {$$ = initTreeNode(yytname[yyr1[yyn]], DefList); insertChild($$, 2, $1, $2);}
@@ -277,7 +277,7 @@ int main(int argc, char** argv)
     {
         addSymbolTable(TreeRoot); //符号表
         printTree(TreeRoot, 0, f1);
-        Semantic_Analysis(TreeRoot);
+        Semantic_Analysis(TreeRoot); //语义分析
         freopen("out.txt", "w",stdout);
         InterCodes codes = translate_Program(TreeRoot); //中间代码生成
         PrintInterCodes(codes);

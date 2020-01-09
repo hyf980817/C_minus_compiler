@@ -940,7 +940,7 @@ void addSymbolTable(T* root)
             //检测这个函数的id是否已经存在, 如果不存在, 创建新的符号表
             T* id = FunDec->child;
             if(search(tables[0]->node, id->id) != NULL)
-                printf("Same function defition: %s", id->id);
+                printf("Same function defition: %s\n", id->id);
             
             symbol func_symbol = createSymbol(FUNC, var_type, id);
             func_symbol.syntaxTreeNode = (void *)id;
