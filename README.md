@@ -3,7 +3,6 @@
 - 项目的目的是编写一个支持C语言语法子集的编译器.
 - 本项目大体上是跟随南京大学许畅老师的编译原理课程的实习项目要求.
 	原网页: https://cs.nju.edu.cn/changxu/2_compiler/index.html
-- 本项目的代码仅供参考.
 - 环境: Ubuntu 18.04. 要求安装gcc,flex,bison.
 
 # 文件结构
